@@ -1,5 +1,10 @@
-__version__ = "0.1.1"
+"""
+DigitalMeve core package.
 
-# DigitalMeve — core package
-# This file exposes the package version and will later include
-# shared constants, utilities, and main entrypoints.
+This module only exposes the package version for packaging and tests.
+"""
+
+__all__ = ["__version__"]
+
+# ⚠️ Bump this when you cut a new release
+__version__ = "0.1.1"
