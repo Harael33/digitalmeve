@@ -1,5 +1,5 @@
 # DigitalMeve
-
+![tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)
 **Le premier site mondial qui analyse et certifie l’authenticité de vos documents.**
 
 DigitalMeve crée un nouveau format universel de certification numérique : le `.MEVE` (Memory Verified).
