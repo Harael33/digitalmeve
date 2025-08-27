@@ -1,20 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "digitalmeve"
-version = "0.1.1"
-description = "DigitalMeve — The Certified Digital Memory (.MEVE)"
+# la version est lue depuis src/__init__.py (__version__)
+dynamic = ["version"]
+description = "Certified Digital Memory (.meve): generate and verify proof files"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
-authors = [
-  { name = "DigitalMeve maintainers", email = "contact@example.com" }
+authors = [{ name = "DigitalMeve", email = "contact@example.com" }]
+keywords = ["meve", "verification", "hash", "signature", "proof", "document", "integrity"]
+
+# Dépendances runtime de la CLI et du core
+dependencies = [
+  "cryptography>=41",
+  "click>=8.0",
 ]
 
+[project.scripts]
+# 2 commandes console
+meve-generate = "cli_generate:main"
+meve-verify   = "cli_verify:main"
+
 [tool.setuptools]
-package-dir = {"" = "src"}
+# notre “package” Python s’appelle littéralement "src" (les tests importent `from src.generator ...`)
+packages = ["src"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+[tool.setuptools.dynamic]
+version = { attr = "src.__version__" }
