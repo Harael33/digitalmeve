@@ -2,19 +2,18 @@ name: publish
 
 on:
   release:
-    types: [published]   # se déclenche quand tu publies une Release GitHub
-  workflow_dispatch:     # permet de lancer à la main depuis l’onglet Actions
+    types: [published]
 
 permissions:
+  id-token: write   # OIDC pour Trusted Publisher (PyPI)
   contents: read
-  id-token: write        # OIDC (Trusted Publishing) — pas de token secret
 
 jobs:
   build-and-publish:
+    name: Build & Publish to PyPI
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/digitalmeve/
+    environment: pypi   # doit correspondre à l’environnement créé dans GitHub (Settings > Environments > pypi)
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,12 +28,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
 
+      - name: Sanity check
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -c "import pathlib; print('root:', pathlib.Path('.').resolve())"
+          python - <<'PY'
+from pathlib import Path
+print('pyproject exists:', Path('pyproject.toml').exists())
+print('src init exists:', Path('src/__init__.py').exists())
+PY
+
       - name: Build sdist & wheel
         run: python -m build
-        # génère dist/*.tar.gz et dist/*.whl
 
       - name: Publish to PyPI (Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist
-          skip-existing: true
+          # Pas de token : OIDC via l’environnement "pypi"
+          print-hash: true
