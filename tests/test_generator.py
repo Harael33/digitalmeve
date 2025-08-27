@@ -1,26 +1,42 @@
+from src.generator import generate_meve, export_public_key, PUBLIC_KEY
+import json
 import os
-import tempfile
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+import base64
 
-from src.generator import generate_meve
-from src.utils import sha256_file, load_json
 
-def test_generate_meve_creates_file_and_valid_content():
-    # crée un fichier temporaire
-    with tempfile.TemporaryDirectory() as tmp:
-        doc = os.path.join(tmp, "sample.txt")
-        with open(doc, "w", encoding="utf-8") as f:
-            f.write("hello MEVE")
+def test_generate_meve(tmp_path):
+    file_path = tmp_path / "doc.txt"
+    file_path.write_text("Hello DigitalMeve")
 
-        out_path, meve = generate_meve(doc, issuer="tester@example.com", status="Personal")
+    meve_file = generate_meve(str(file_path))
 
-        assert os.path.exists(out_path)
-        # charge le .meve écrit
-        on_disk = load_json(out_path)
+    assert os.path.exists(meve_file)
 
-        # hash attendu = hash du doc
-        expected_hash = sha256_file(doc)
-        assert on_disk["hash_sha256"] == expected_hash
-        assert on_disk["spec"] == "MEVE/1"
-        assert on_disk["status"] == "Personal"
-        assert on_disk["issuer"] == "tester@example.com"
-        assert on_disk["meta"]["original_name"] == "sample.txt"
+    with open(meve_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+        assert data["file"] == "doc.txt"
+        assert data["hash"] is not None
+        assert data["format"] == "MEVE"
+        assert "signature" in data
+
+        # Vérification de la signature
+        signature = base64.b64decode(data["signature"].encode())
+        PUBLIC_KEY.verify(
+            signature,
+            json.dumps({k: data[k] for k in ["file","timestamp","hash","algorithm","format"]}, sort_keys=True).encode(),
+            padding.PKCS1v15(),
+            hashes.SHA256()
+        )
+
+
+def test_export_public_key(tmp_path):
+    path = tmp_path / "pub.pem"
+    exported = export_public_key(str(path))
+    assert os.path.exists(exported)
+
+    with open(exported, "rb") as f:
+        pem = f.read()
+        assert b"PUBLIC KEY" in pem
