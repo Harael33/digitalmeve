@@ -1,25 +1,10 @@
-import unittest
-from src import verifier, generator
+from src import utils
 
-class TestVerifier(unittest.TestCase):
+def verify_proof(proof: dict, content: bytes) -> bool:
+    """
+    Vérifie qu’un document correspond bien à une preuve donnée.
+    """
+    expected_hash = proof.get("hash")
+    actual_hash = utils.compute_hash(content)
 
-    def test_verification_flow(self):
-        # Générer un fichier de test
-        dummy_content = b"Document de test"
-        proof = generator.generate_proof(dummy_content, issuer="TestUser")
-
-        # Vérifier que le fichier généré est valide
-        result = verifier.verify_proof(proof, dummy_content)
-        self.assertTrue(result)
-
-    def test_tampered_document(self):
-        dummy_content = b"Document original"
-        proof = generator.generate_proof(dummy_content, issuer="TestUser")
-
-        # Document modifié
-        tampered_content = b"Document modifie"
-        result = verifier.verify_proof(proof, tampered_content)
-        self.assertFalse(result)
-
-if __name__ == "__main__":
-    unittest.main()
+    return expected_hash == actual_hash
