@@ -2,22 +2,24 @@ name: tests
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    env:
+      # Force Python à voir la racine du repo comme chemin d'import
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -27,6 +29,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest
+      - name: Sanity check imports
         run: |
-          pytest -q
+          python - << 'PY'
+          import sys, os
+          print("CWD:", os.getcwd())
+          print("PYTHONPATH:", os.environ.get("PYTHONPATH"))
+          import src
+          import src.utils
+          print("OK: import src, src.utils")
+          PY
+
+      - name: Run pytest
+        run: pytest -q
