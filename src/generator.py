@@ -1,46 +1,31 @@
-import hashlib
-import json
-import base64
-import time
-import sys
+import hashlib, json, datetime
 from pathlib import Path
 
-def generate_meve(file_path):
-    file = Path(file_path)
-    if not file.exists():
-        raise FileNotFoundError("File not found")
+def generate_meve(file_path, issuer="DigitalMeve", status="Pro", output_path=None):
+    """
+    Génère un fichier .meve lié à un document.
+    - file_path: chemin du fichier à certifier
+    - issuer: émetteur de la preuve (par défaut: DigitalMeve)
+    - status: type (Pro, Personal, Official)
+    - output_path: chemin de sortie optionnel
+    """
+    file_path = Path(file_path)
+    content = file_path.read_bytes()
+    sha256 = hashlib.sha256(content).hexdigest()
 
-    # Lire le fichier
-    content = file.read_bytes()
-
-    # Hash SHA-256
-    file_hash = hashlib.sha256(content).hexdigest()
-
-    # Métadonnées MEVE
-    meve_data = {
-        "status": "Personal",  # Personal | Pro | Official
-        "issuer": "anonymous",
-        "certified": "DigitalMeve (self)",
-        "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "hash_sha256": file_hash,
-        "id": base64.urlsafe_b64encode(file_hash.encode()).decode()[:12],
+    meve = {
+        "version": "MEVE/1",
+        "status": status,
+        "issuer": issuer,
+        "time": datetime.datetime.utcnow().isoformat() + "Z",
+        "hash_sha256": sha256,
         "meta": {
-            "filename": file.name,
-            "size": file.stat().st_size,
-            "mime": "application/octet-stream"
-        }
+            "filename": file_path.name,
+            "size": file_path.stat().st_size,
+        },
     }
 
-    # Sauvegarde du fichier .meve
-    output = file.with_suffix(file.suffix + ".meve")
-    with open(output, "w", encoding="utf-8") as f:
-        json.dump(meve_data, f, indent=2)
-
-    print(f"✅ MEVE file generated: {output}")
-
-# Exécution via CLI
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python generator.py <file>")
-    else:
-        generate_meve(sys.argv[1])
+    # fichier de sortie
+    out = Path(output_path) if output_path else file_path.with_suffix(file_path.suffix + ".meve")
+    out.write_text(json.dumps(meve, indent=2), encoding="utf-8")
+    return out
