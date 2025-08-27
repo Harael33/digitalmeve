@@ -1,52 +1,35 @@
-import json
-import hashlib
-import os
+import hashlib, json
+from pathlib import Path
 
-
-def verify_meve(document_path: str, meve_path: str) -> bool:
+def verify_meve(file_path, meve_path):
     """
-    Vérifie l’authenticité d’un document en comparant son hash avec un fichier .MEVE.
-
-    Args:
-        document_path (str): chemin du document original.
-        meve_path (str): chemin du fichier .meve.json correspondant.
-
-    Returns:
-        bool: True si le document correspond au .MEVE, False sinon.
+    Vérifie qu'un fichier correspond bien à sa preuve .meve.
+    - file_path: chemin du document original
+    - meve_path: fichier .meve correspondant
+    Retourne un dict { valid: bool, reason: str }
     """
+    file_path = Path(file_path)
+    meve_path = Path(meve_path)
 
-    # Lire le document original
-    with open(document_path, "rb") as f:
-        content = f.read()
+    if not file_path.exists():
+        return {"valid": False, "reason": "Fichier original introuvable"}
+    if not meve_path.exists():
+        return {"valid": False, "reason": "Fichier .meve introuvable"}
 
-    doc_hash_hex = hashlib.sha256(content).hexdigest()
+    # recalcul du hash
+    content = file_path.read_bytes()
+    sha256 = hashlib.sha256(content).hexdigest()
 
-    # Charger le .MEVE
-    with open(meve_path, "r", encoding="utf-8") as f:
-        meve_data = json.load(f)
+    # lecture du .meve
+    meve = json.loads(meve_path.read_text(encoding="utf-8"))
 
-    expected_hash = meve_data.get("Hash-SHA256")
+    if meve.get("hash_sha256") != sha256:
+        return {"valid": False, "reason": "Empreinte SHA-256 non correspondante"}
 
-    # Comparaison stricte
-    if expected_hash == doc_hash_hex:
-        return True
-    else:
-        return False
-
-
-def read_meve_info(meve_path: str) -> dict:
-    """
-    Lit et retourne les informations d’un fichier .MEVE.
-
-    Args:
-        meve_path (str): chemin du fichier .meve.json
-
-    Returns:
-        dict: contenu JSON du MEVE
-    """
-
-    if not os.path.exists(meve_path):
-        raise FileNotFoundError(f"MEVE file not found: {meve_path}")
-
-    with open(meve_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return {
+        "valid": True,
+        "reason": "OK",
+        "issuer": meve.get("issuer", "Unknown"),
+        "status": meve.get("status", "Unknown"),
+        "time": meve.get("time", None)
+    }
