@@ -1,42 +1,26 @@
-from src.generator import generate_meve, export_public_key, PUBLIC_KEY
-import json
 import os
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import padding
-import base64
+import json
+import tempfile
+from pathlib import Path
 
+from src.generator import generate_meve
 
-def test_generate_meve(tmp_path):
-    file_path = tmp_path / "doc.txt"
-    file_path.write_text("Hello DigitalMeve")
+def test_generate_meve_creates_file_and_valid_json():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        doc = Path(tmpdir) / "sample.txt"
+        doc.write_text("hello digitalmeve", encoding="utf-8")
 
-    meve_file = generate_meve(str(file_path))
+        # génère le .meve
+        generate_meve(str(doc))
 
-    assert os.path.exists(meve_file)
+        meve_path = Path(str(doc) + ".meve")
+        assert meve_path.exists(), "Le fichier .meve n'a pas été créé"
 
-    with open(meve_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        data = json.loads(meve_path.read_text(encoding="utf-8"))
 
-        assert data["file"] == "doc.txt"
-        assert data["hash"] is not None
-        assert data["format"] == "MEVE"
-        assert "signature" in data
-
-        # Vérification de la signature
-        signature = base64.b64decode(data["signature"].encode())
-        PUBLIC_KEY.verify(
-            signature,
-            json.dumps({k: data[k] for k in ["file","timestamp","hash","algorithm","format"]}, sort_keys=True).encode(),
-            padding.PKCS1v15(),
-            hashes.SHA256()
-        )
-
-
-def test_export_public_key(tmp_path):
-    path = tmp_path / "pub.pem"
-    exported = export_public_key(str(path))
-    assert os.path.exists(exported)
-
-    with open(exported, "rb") as f:
-        pem = f.read()
-        assert b"PUBLIC KEY" in pem
+        # champs clés
+        assert data["hash_sha256"], "hash_sha256 manquant"
+        assert data["time"], "time manquant"
+        assert data["status"] in {"Personal", "Pro", "Official"}
+        assert data["meta"]["filename"] == "sample.txt"
+        assert data["meta"]["size"] == doc.stat().st_size
