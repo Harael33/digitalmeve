@@ -1,10 +1,6 @@
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "digitalmeve"
-version = "0.1.0"
+version = "0.1.1"
 description = "DigitalMeve — The Certified Digital Memory (.MEVE)"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -12,43 +8,13 @@ license = { file = "LICENSE" }
 authors = [
   { name = "DigitalMeve maintainers", email = "contact@example.com" }
 ]
-keywords = ["meve", "memory verified", "proof", "signature", "verification", "integrity", "trust", "blockchain", "hash"]
-classifiers = [
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent",
-  "Intended Audience :: Developers",
-  "Topic :: Security :: Cryptography",
-  "Topic :: Utilities",
-]
-# Dépendances runtime (aligne avec requirements.txt)
-dependencies = [
-  "cryptography>=41,<43"
-]
-
-[project.urls]
-Homepage = "https://github.com/BACOUL/digitalmeve"
-Repository = "https://github.com/BACOUL/digitalmeve"
-Issues = "https://github.com/BACOUL/digitalmeve/issues"
-
-# Déclare les scripts console
-[project.scripts]
-meve-generate = "cli_generate:main"
-meve-verify   = "cli_verify:main"
 
 [tool.setuptools]
-include-package-data = true
 package-dir = {"" = "src"}
 
-# Trouve les packages sous src/
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["*"]
 
-# Inclut aussi les deux modules de CLI à la racine
-py-modules = ["cli_generate", "cli_verify"]
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
