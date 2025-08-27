@@ -96,6 +96,19 @@ Ouvrez une Pull Request
 📜 Licence
 
 Ce projet est sous licence MIT — voir le fichier LICENSE.
+---
+
+## 📜 License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.  
+
+- You are free to use, modify, and distribute this project under the same license.  
+- Any modifications or derivative works **must** also be released under AGPL-3.0.  
+- If you deploy this project as a service (SaaS), you are required to make the source code available.  
+
+🔗 Full license text: [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.txt)
+
+© 2025 DigitalMeve. All rights reserved.
 
 
 ---
