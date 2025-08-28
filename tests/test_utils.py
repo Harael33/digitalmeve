@@ -1,9 +1,12 @@
-import pytest
 from digitalmeve.utils import format_identity
 
-def test_format_identity_returns_dict():
-    data = {"name": "John", "age": 30}
-    result = format_identity(data)
-    assert isinstance(result, dict)
-    assert "name" in result
-    assert result["name"] == "John"
+def test_format_identity_with_str():
+    assert format_identity(" Alice ") == "alice"
+
+def test_format_identity_with_none():
+    assert format_identity(None) == ""
+
+def test_format_identity_with_dict():
+    result = format_identity({"name": "Alice"})
+    assert isinstance(result, str)
+    assert "alice" in result.lower()
