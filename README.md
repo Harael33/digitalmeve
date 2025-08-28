@@ -1,301 +1,145 @@
-# DigitalMeve — The Certified Digital Memory (.MEVE)
+# 🌍 DigitalMeve — The .MEVE Standard
 
-[![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-## 🎯 Vision (v8)
-DigitalMeve crée un **format universel de preuve numérique** : le **.MEVE (Memory Verified)** — un fichier texte minimal, **lisible en 2 secondes**, qui prouve :
-1) **L’existence** d’un document à une date donnée  
-2) **L’intégrité** du document (hash SHA-256)  
-3) **L’authenticité de l’émetteur** (particulier, pro, institution)
-
-Objectif : devenir le **“PDF de la preuve numérique”**.
+**The first universal format to prove, certify and verify the authenticity of any digital document.**  
+DigitalMeve introduces `.meve` (Memory Verified), a simple and universal way to **timestamp, hash, and certify documents**.
 
 ---
 
-## 🔑 Niveaux de certification
-- **Personal** → auto-certification (preuve d’existence)  
-- **Pro** → email vérifié (liée à une identité réelle)  
-- **Official** → domaine DNS / institution vérifiée (preuve officielle)
+## 🚀 Vision
 
-> Le **statut est calculé par le vérificateur**, jamais déclaré manuellement → pas de triche.
+DigitalMeve creates a new universal certification format: **`.meve` (Memory Verified)**.  
+A lightweight and human-readable file proving in **2 seconds**:
 
----
+1. The existence of a document at a given date.  
+2. The integrity of the document (via SHA-256 hash).  
+3. The authenticity of the issuer (Personal / Pro / Official).  
 
-## 📂 Spécification du format (MEVE/1)
-Exemple de contenu (voir `docs/SPEC_MEVE_v1.md` pour le détail) :
-
-MEVE/1 Status: Official | Pro | Personal Issuer: <identité> Certified: DigitalMeve (dns|email|self) Time: <horodatage UTC ISO 8601> Hash-SHA256: <empreinte> ID: <code court> Signature: <base64 Ed25519>   # optionnel pour MVP Meta: <nom fichier> • <taille bytes> • <mime> Doc-Ref: <référence interne optionnelle>
+**Goal**: make `.meve` the **“PDF of digital proof”** worldwide.
 
 ---
 
-## 🧪 Démonstrations & exemples
-- Dossier **`examples/`** :
-  - `invoice.meve.json` (facture)
-  - `diploma.meve.json` (diplôme)
-- Vérificateur (MVP) : _drag & drop_ d’un `.meve` **+** du fichier original → **OK / KO** immédiat (hash).
+## 🔑 Levels of Certification
+
+- **Personal** → Self-certification (existence proof only).  
+- **Pro** → Email verified (identity linked to a real professional).  
+- **Official** → DNS verified / institution (official certification).  
+
+⚡ Certification level is always **computed automatically by DigitalMeve**, never declared manually. Impossible to fake.
 
 ---
 
-## 🛠️ MVP (Phase 1 – 1 à 2 mois)
-- Générateur `.meve` (site + script)
-- Vérificateur `.meve` (site)
-- SHA-256 + horodatage + ID (et **signature Ed25519** dans v1.1)
+## 📂 Format Specification — MEVE/1
 
-Roadmap détaillée : `docs/SPEC_MEVE_v1.md`.
+Example of `.meve` structure:
 
----
-
-## 💼 Modèle économique
-- **Gratuit** : particuliers (preuve perso)
-- **Abonnement/API** : entreprises (factures, contrats)
-- **Licence officielle** : institutions (universités, administrations)
+MEVE/1 Status: Official | Pro | Personal Issuer: <identity> Certified: DigitalMeve (dns|email|self) Time: <UTC timestamp> Hash-SHA256: <document hash> ID: <short unique code> Signature: <Ed25519 base64> Meta: <filename> • <size bytes> • <mime> Doc-Ref: <optional internal reference>
 
 ---
 
-## 🔒 Sécurité & limites (MVP)
-- Le `.meve` prouve **l’existence et l’intégrité du contenu** à une date T.  
-- Il **ne garantit pas** la véracité d’un **faux document** émis par un particulier.  
-- Pour les **preuves “officielles”**, l’émetteur doit être **vérifié** (DNS, email de domaine, clé officielle).  
-- Détails et disclaimers : `docs/FAQ.md`.
+## 🛡 Security
+
+- **Tamper-proof**: if the document changes (even one comma), the hash changes and the `.meve` becomes invalid.  
+- **Metadata embedding**: JSON proof can be embedded in the file metadata OR generated as a sidecar `.meve.json`.  
+- **Scalable**: fallback `.meve.json` for large files (>50 MB).  
+- **Detection**: verification instantly detects any fraud attempt.  
 
 ---
 
-## 🧩 Pour les développeurs
-Installation locale (pour contribuer) :
-```bash
-pip install -e .
-pytest -q
+## 📊 Use Cases
 
-Points d’entrée Python (MVP) :
+### 🧑‍💻 Individuals
+- Proof of creation (art, photos, manuscripts).  
+- Secure timestamp (testament, private agreements).  
+- Evidence of damages (video/photo insurance).  
 
-from digitalmeve import __version__
-# Le code Python est le moteur technique pour générer/valider les .meve (MVP)
+### 👔 Professionals
+- Certified invoices, quotes, contracts.  
+- Proof of authorship (designs, code).  
+- Intellectual property pre-proof (before patents).  
 
-
----
-
-🤝 Contribuer
-
-Problèmes → Issues (bug/feature)
-
-PR bienvenues (voir CONTRIBUTING.md)
-
-Templates d’issues → .github/ISSUE_TEMPLATE/
-
-
+### 🏛 Institutions
+- Universities → certified diplomas.  
+- Governments → official documents.  
+- Courts & notaries → judgments, legal contracts.  
 
 ---
 
-📜 Licence
+## 📜 Roadmap
 
-MIT — voir LICENSE.
+### Phase 1 (MVP, 1–2 months)
+- Generator `.meve` (site + script).  
+- Verifier `.meve` (drag & drop site).  
+- SHA-256 hash + UTC timestamp + Ed25519 signature.  
 
----
+### Phase 2 (6 months)
+- Pro email verification.  
+- Official DNS verification.  
+- Export certified PDF with DigitalMeve footer.  
+- Public API for third-party integration.  
 
-# 2) `docs/SPEC_MEVE_v1.md`
-
-Crée ce fichier et colle :
-
-```markdown
-# Spécification MEVE/1 (MVP)
-
-## 1. Objet
-Le `.meve` est un **fichier JSON** minimal renseignant une **preuve d’existence, d’intégrité et d’émetteur** pour un document donné.
-
-## 2. Champs obligatoires
-- `format`: `"MEVE"`
-- `version`: `"1"`
-- `doc.name`: nom du fichier d’origine
-- `doc.mime`: type MIME
-- `doc.size`: taille en octets
-- `doc.sha256`: empreinte SHA-256 hex du fichier original
-- `generated_at`: horodatage UTC ISO 8601 (sans microsecondes)
-- `issuer`: identité telle que déclarée (string normalisée)
-- `id`: identifiant court (recommandé)
-- `signature`: **optionnelle** en v1 (prévue v1.1 Ed25519 base64)
-
-## 3. Exemple
-```json
-{
-  "format": "MEVE",
-  "version": "1",
-  "doc": {
-    "name": "invoice_2025_0001.pdf",
-    "mime": "application/pdf",
-    "size": 123456,
-    "sha256": "ab12…ef34"
-  },
-  "issuer": "acme-ltd@example.com",
-  "generated_at": "2025-08-27T10:15:00Z",
-  "id": "K7R9-2M",
-  "signature": ""
-}
-
-4. Niveaux (calculés côté vérif.)
-
-Personal : issuer (email libre)
-
-Pro : issuer validé par email
-
-Official : issuer validé par DNS (_dm-meve TXT) ou clé officielle
-
-
-5. Vérification
-
-Recalcul SHA-256 du fichier fourni → égal à doc.sha256 ?
-
-Si issuer vérifié (DNS/email), afficher badge correspondant.
-
-Affichage clair : OK (intègre) / KO (altéré) / Unknown (source non-vérifiée).
-
-
-6. Limites (MVP)
-
-Preuve liée au contenu binaire, pas à la présentation (un PDF optimisé peut changer de hash).
-
-Pour documents volumineux (>50 Mo), fallback autorisé : .meve.json séparé.
-
-Formats sans métadonnées → sidecar .meve.json.
-
-
-7. Évolutions (v1.1+)
-
-Signature Ed25519 (base64)
-
-Export PDF avec pied-de-page “Certifié par DigitalMeve”
-
-API pro + intégrations ERP/Universités
-
+### Phase 3 (1–2 years)
+- International standardization (ISO/AFNOR).  
+- Integrations in ERP / CRM / Universities.  
+- Large-scale adoption.  
 
 ---
 
-# 3) `docs/FAQ.md`
+## 📢 Communication
 
-```markdown
-# FAQ — DigitalMeve
+**Slogan**:  
+👉 *“DigitalMeve — The first online platform that certifies and verifies the authenticity of your documents.”*  
 
-## DigitalMeve certifie-t-il l’authenticité d’un faux document ?
-Non. Le `.meve` prouve **existence + intégrité** d’un contenu à une date T.  
-L’**authenticité de la source** est garantie **uniquement** pour les statuts **Pro/Official** (email/DNS/clé).
+**Pitch**:  
+“Your documents, certified and verifiable in 2 seconds, anywhere in the world.”  
 
-## Et si je perds mon `.meve` ?
-Vous pouvez **régénérer** une preuve si vous possédez encore le fichier original (le hash restera identique).  
-Sinon, la preuve est perdue.
-
-## Pourquoi le hash change parfois sur des PDF “optimisés” ?
-Parce que la **représentation binaire** a changé. Le contenu visuel peut sembler identique, mais le hash est calculé sur les **octets**, pas sur l’apparence.
-
-## Les institutions ?
-Elles obtiennent un **badge Official** via un enregistrement **DNS** ou une **clé** fournie (future API).
-
-## Aspects légaux
-DigitalMeve ne remplace ni notaire ni horodatage qualifié eIDAS.  
-Il fournit une **preuve technique** d’existence/intégrité/émission, utilisable comme **indice**.
-
+**Channels**:  
+- Clear landing page (Framer).  
+- Explainer videos (EN/FR).  
+- Live demo (upload → verify).  
+- LinkedIn / YouTube / Twitter campaigns.  
 
 ---
 
-4) examples/README.md + exemples
+## ⚖ License
 
-examples/README.md :
-
-# Exemples .MEVE
-
-- `invoice.meve.json` : facture exemple
-- `diploma.meve.json` : diplôme exemple
-
-Chaque fichier `.meve.json` est un **exemple** de payload MEVE/1 tel que spécifié dans `docs/SPEC_MEVE_v1.md`.
-
-examples/invoice.meve.json :
-
-{
-  "format": "MEVE",
-  "version": "1",
-  "doc": {
-    "name": "invoice_2025_0001.pdf",
-    "mime": "application/pdf",
-    "size": 123456,
-    "sha256": "ab12cd34ef..."
-  },
-  "issuer": "billing@acme.example",
-  "generated_at": "2025-08-27T10:15:00Z",
-  "id": "INV-K7R9-2M",
-  "signature": ""
-}
-
-examples/diploma.meve.json :
-
-{
-  "format": "MEVE",
-  "version": "1",
-  "doc": {
-    "name": "diploma_alice.pdf",
-    "mime": "application/pdf",
-    "size": 234567,
-    "sha256": "98ab76cd54..."
-  },
-  "issuer": "registrar@university.example",
-  "generated_at": "2025-08-27T10:20:00Z",
-  "id": "UNI-9P3X-1Q",
-  "signature": ""
-}
-
+This repository is licensed under the **MIT License**.  
+See [LICENSE](./LICENSE) for details.  
 
 ---
 
-5) Templates GitHub (issues / PR)
+## 🛠 Contributing
 
-Créer .github/ISSUE_TEMPLATE/bug_report.md :
-
----
-name: Bug report
-about: Signaler un bug
-labels: bug
----
-
-**Description**
-Que s’est-il passé ?
-
-**Étapes pour reproduire**
-1. …
-2. …
-
-**Comportement attendu**
-…
-
-**Captures / logs**
-…
-
-Créer .github/ISSUE_TEMPLATE/feature_request.md :
+We welcome contributions!  
+- Open issues for bugs or feature requests.  
+- Submit pull requests with clear commits.  
+- Follow the contribution guidelines in [CONTRIBUTING.md](./CONTRIBUTING.md).  
 
 ---
-name: Feature request
-about: Proposer une amélioration
-labels: enhancement
+
+## ✅ Status
+
+- Current version: **0.1.2**  
+- Release page: [Releases](../../releases)  
+- Tests: ![Tests](https://github.com/<USER>/<REPO>/actions/workflows/tests.yml/badge.svg)  
+
 ---
 
-**Problème / besoin**
-…
+## 📚 Documentation
 
-**Solution proposée**
-…
+- [Specification](./docs/specification.md)  
+- [Security](./docs/security.md)  
+- [Examples](./docs/examples.md)  
+- [Roadmap](./docs/roadmap.md)  
 
-**Alternatives**
-…
+---
 
-**Contexte**
-…
+## 🌟 Final Goal
 
-Créer .github/PULL_REQUEST_TEMPLATE.md :
+Make **.MEVE the universal format of digital certification**:  
+- Free for individuals.  
+- Subscription/API for professionals.  
+- License for institutions.
 
-## Objet
-(quoi / pourquoi)
+DigitalMeve — Trust in every file.
 
-## Changements
-- …
-
-## Checklist
-- [ ] Tests OK
-- [ ] Docs/README mis à jour si nécessaire
 
