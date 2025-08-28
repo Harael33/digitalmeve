@@ -14,3 +14,6 @@ Ce fichier suit le format [Keep a Changelog](https://keepachangelog.com/fr/1.0.0
 
 ### Connu
 - Profils “hash canonique” planifiés (PDF/IMG)
+## [0.1.2] - 2025-01-xx
+- Nouvelle version publiée via Release
+- Correction du workflow (plus de publish automatique à chaque commit)
