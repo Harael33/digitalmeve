@@ -1,4 +1,5 @@
-from digitalmeve import __version__
-
-def test_version():
-    assert __version__ == "0.1.5"
+--- a/tests/test_version.py
++++ b/tests/test_version.py
+@@
+-    assert digitalmeve.__version__ == "0.1.5"
++    assert digitalmeve.__version__ == "0.1.6"
