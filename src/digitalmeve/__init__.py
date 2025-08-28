@@ -1,13 +1,16 @@
 """
 DigitalMeve package init.
-Expose la version pour setuptools (dynamic version) et les objets publics.
+Expose la version et les APIs publiques de base.
 """
 
-# ⚠️ Mets ici la version courante de ton projet (aligne avec la release)
-__version__ = "0.1.4"
+__version__ = "0.1.4"   # aligne ceci avec ta prochaine release/tag
 
-# Si tu veux exposer des APIs au top-level:
-# from .generator import generate_meve
-# from .verifier import verify_meve
+from .generator import generate_meve, save_meve
+from .verifier  import verify_meve
 
-__all__ = ["__version__"]
+__all__ = [
+    "__version__",
+    "generate_meve",
+    "save_meve",
+    "verify_meve",
+]
