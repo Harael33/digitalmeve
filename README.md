@@ -1,193 +1,201 @@
 # DigitalMeve — The Certified Digital Memory
 
-[![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+[![Tests](https://img.shields.io/github/actions/workflow/status/BACOUL/digitalmeve/tests.yml?label=tests)](https://github.com/BACOUL/digitalmeve/actions)
+[![Publish](https://img.shields.io/github/actions/workflow/status/BACOUL/digitalmeve/publish.yml?label=publish)](https://github.com/BACOUL/digitalmeve/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#-license)
+[![PyPI](https://img.shields.io/pypi/v/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)
+
+**DigitalMeve** introduces a simple, universal proof format: **`.MEVE`** (Memory Verified).  
+It lets anyone **timestamp & prove** a document’s existence and integrity, and lets professionals/institutions **certify** provenance.
 
 ---
 
-## 🚀 Vision
+## 🔰 What a `.MEVE` proves
+1. **Existence at a given date** (UTC timestamp)
+2. **Integrity of the content** (SHA-256 hash)
+3. **Issuer link** (Personal / Pro / Official)
+4. **Authenticity** via **Ed25519** digital signature (Base64)
 
-**DigitalMeve** defines a new universal format of digital certification: **.MEVE (Memory Verified)**.  
-A simple, human-readable (2-second) proof that attests:
-
-- 📌 The **existence** of a document at a given date  
-- 🔐 The **integrity** of the document (SHA-256 fingerprint)  
-- 👤 The **authenticity** of the **issuer** (person, professional, or institution)
-
-**Goal:** become the “**PDF of digital proof**” for the world.
+> **Important:** the proof binds to the **content bytes** (hash), not to the visual rendering of a document.
 
 ---
 
-## 🧩 What is a `.meve` file?
+## 🧩 Levels of trust
+- **Personal** — self-asserted proof (free): existence + integrity.
+- **Pro** — **email verified** at a business domain (paid): links proof to a professional identity.
+- **Official** — **DNS-verified domain** (and optional org signing key): institutional/official provenance.
 
-A small, signed proof file **linked to any document**. It contains:
-- the document’s SHA-256 `hash`,
-- the original file name & MIME type,
-- the generation timestamp (ISO 8601),
-- the **issuer** identity (e.g., email/domain) and **signature** (base64).
-
-It can live as:
-- **embedded metadata** (for formats that support it), or
-- **sidecar** JSON file (`yourfile.meve.json`) for maximal interoperability.
+The status is **computed by the verifier**, never user-declared.
 
 ---
 
-## 📦 Quickstart
+## 📦 Install
 
-### 1) Clone & install
 ```bash
-git clone https://github.com/BACOUL/digitalmeve.git
-cd digitalmeve
-python -m venv .venv && source .venv/bin/activate  # (Windows: .venv\Scripts\activate)
-pip install -r requirements.txt
+pip install -U digitalmeve
 
-2) Generate a .meve proof
+Command-line tools:
 
-python cli_generate.py \
-  --file ./examples/facture.pdf \
-  --issuer "contact@example.com" \
-  --out ./examples/facture.meve
+# Generate a .MEVE for a document
+meve-generate path/to/document.pdf --issuer-email you@domain.com --status Pro --meta ref=FAC-2025 amount=123.45
 
-3) Verify a document against its proof
+# Verify a .MEVE against the original document (auto-detects sidecar)
+meve-verify path/to/document.pdf
+# or explicitly:
+meve-verify path/to/document.pdf --meve path/to/document.pdf.meve
 
-python cli_verify.py \
-  --file ./examples/facture.pdf \
-  --meve ./examples/facture.meve
+Python usage (soon):
 
-If your format has no metadata (e.g., .txt) or the file is very large, use the sidecar:
-
-python cli_generate.py --file big.pdf --issuer "contact@example.com" --out big.meve.json
-python cli_verify.py   --file big.pdf --meve big.meve.json
+from src.generator import generate_meve
+from src.verifier import verify_meve
 
 
 ---
 
-🛠️ How it works (high-level)
-
-1. We compute the SHA-256 of the document.
-
-
-2. We create a compact proof structure (issuer, timestamp, file meta, hash).
-
-
-3. We sign that structure and store the signature with the proof.
-
-
-4. Verification recomputes the hash and checks the signature & fields.
-
-
-
-> ✅ If any metadata or content is modified, verification fails instantly.
-
-
-
-
----
-
-📄 Example of a .meve (human-readable)
+🗂️ .MEVE/1 text format (spec)
 
 MEVE/1
-Status: Pro
-Issuer: contact@example.com
-Certified: DigitalMeve (email verified)
-Time: 2025-08-27T22:35:01Z
-Hash-SHA256: 5f2a6c4cf0b67d2f9c3f8ad...
-ID: MEVE-9XJ3L
-Signature: 0JfA0a9sDsa7D3gS== (base64 Ed25519)
-Meta: facture.pdf • 18230 bytes • application/pdf
-Doc-Ref: facultatif
+Status: Official | Pro | Personal
+Issuer: <identity>
+Certified: DigitalMeve (dns|email|self)
+Time: <UTC ISO8601>
+Hash-SHA256: <hex digest>
+ID: <short code>
+Signature: <base64 Ed25519>
+Meta: <filename> • <size bytes> • <mime>
+Doc-Ref: <optional>
 
-Visible instantly — no complex tools required.
+Default: inline .meve file.
 
+Fallback for large/unsupported formats: myfile.ext.meve.json (sidecar).
 
----
+The verifier recomputes the hash from the original file and checks the signature.
 
-🔒 Security & integrity
-
-Tamper-proof by design: the SHA-256 hash binds the proof to the exact content.
-
-Metadata edits (title, author, etc.) are detected because the verification recomputes the hash.
-
-Large files: prefer sidecar .meve.json to avoid touching heavy binaries.
-
-Interoperability: sidecar works for all formats (including .txt).
-
-Legal note: the proof attests to the content (hash), not the visual rendering.
-For example, a “PDF optimization” that changes bytes changes the hash → it’s a different document.
-
-
-See SECURITY.md to report a vulnerability.
 
 
 ---
 
-✅ Tests (CI)
+🧪 Examples
 
-Unit tests run on GitHub Actions for Python 3.10 / 3.11 / 3.12.
+# Example: create proof for invoice.pdf
+meve-generate examples/invoice.pdf --issuer-email billing@acme.com --status Pro --meta ref=FAC-2025 client=ACME amount=123.45
 
-Local run:
+# Verify later
+meve-verify examples/invoice.pdf
 
-
-pip install -r requirements.txt
-pytest -q
-
-
----
-
-🗺️ Roadmap (next milestones)
-
-🔐 Optional public-key registry for issuer discovery & trust.
-
-🧾 Embedded metadata for more formats; seamless sidecar fallback.
-
-🧰 Official pip package (digitalmeve) and stable CLI.
-
-🌍 Multilingual docs.
-
-
-Track progress in CHANGELOG.md and Releases.
+examples/ will contain sample files (invoice.pdf + invoice.pdf.meve) in next releases.
 
 
 ---
 
-🤝 Contributing & community
+🔒 Security model
 
-Start with CONTRIBUTING.md
+Hash: SHA-256 over the exact bytes of the document. Any modification → different hash → verification fails.
 
-Follow our Code of Conduct
+Signature: Ed25519 (Base64) issued by DigitalMeve; prevents tampering with the .meve file itself.
 
-Open issues with our templates: .github/ISSUE_TEMPLATE/
+Sidecar fallback: for formats without stable metadata or large files (>50MB), use *.meve.json.
 
-Ask questions or propose ideas in Discussions.
+No private data inside signature; meta fields are minimal.
 
+
+
+---
+
+⚖️ Legal notes (plain language)
+
+A .MEVE is a technical proof (existence + integrity + issuer link).
+
+It is not a legal certification by itself.
+
+Personal = self-asserted; Pro = email verified; Official = DNS/org verified.
+
+Where applicable, DigitalMeve can export a PDF footer “Certified by DigitalMeve” (Phase 2).
+
+
+
+---
+
+👤 Pro (email) — draft
+
+Flow: user proves ownership of name@company.tld (magic link or one-time code).
+
+Proof fields: Status: Pro, Certified: DigitalMeve (email), issuer = the verified email.
+
+Heuristics deny disposable/public free-mail for Pro status.
+
+See docs/PRO.md.
+
+
+🏛️ Official (DNS/org) — draft
+
+Flow: admin adds a DNS TXT challenge at _meve.<domain> and we verify it.
+
+Proof fields: Status: Official, Certified: DigitalMeve (dns), issuer = org name/domain.
+
+Optional org signing key (Ed25519) for co-signature (later).
+
+See docs/OFFICIAL.md.
+
+
+
+---
+
+🗺️ Roadmap
+
+[x] Personal (MVP): generate & verify .MEVE (hash + Ed25519)
+
+[x] Packaging (PyPI) and CLI (meve-generate, meve-verify)
+
+[x] CI (tests) + Releases (Trusted Publisher → PyPI)
+
+[ ] Examples: examples/invoice.pdf + invoice.pdf.meve
+
+[ ] Website (Framer) — Personal only v1
+
+[ ] Pro verification (email) — docs/PRO.md
+
+[ ] Official verification (DNS/org) — docs/OFFICIAL.md
+
+[ ] Public API + PDF footer “Certified by DigitalMeve” (Phase 2)
+
+
+
+---
+
+🤝 Contributing
+
+See CONTRIBUTING.md.
+Please open issues/discussions for proposals; PRs welcome.
+
+
+---
+
+🔐 Security
+
+See SECURITY.md.
+If you suspect a vulnerability, contact us privately before disclosure.
 
 
 ---
 
 📜 License
 
-Released under the MIT License — permissive for commercial and open source use.
-See LICENSE.
-If you use DigitalMeve in production, please keep a link to the repo:
-
-DigitalMeve — https://github.com/BACOUL/digitalmeve  (MIT)
+MIT © DigitalMeve.
+The names DigitalMeve and .MEVE are used as project identifiers; please attribute in derivative works.
 
 
 ---
 
-🔗 Useful links
+📎 Project links
 
-Releases: https://github.com/BACOUL/digitalmeve/releases
-
-Actions (CI): https://github.com/BACOUL/digitalmeve/actions
+Homepage: https://github.com/BACOUL/digitalmeve
 
 Issues: https://github.com/BACOUL/digitalmeve/issues
 
-Discussions: https://github.com/BACOUL/digitalmeve/discussions
+PyPI: https://pypi.org/project/digitalmeve/
 
+Pro spec: docs/PRO.md — Official spec: docs/OFFICIAL.md
 
 
 ---
-
-© 2025 DigitalMeve. All rights reserved under MIT terms.
