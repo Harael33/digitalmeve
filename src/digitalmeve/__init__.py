@@ -1,6 +1,5 @@
-"""DigitalMeve package public API and version."""
-
-# Exposer la version du paquet
-__version__ = "0.1.5"
-
-__all__ = ["__version__"]
+--- a/src/digitalmeve/__init__.py
++++ b/src/digitalmeve/__init__.py
+@@
+-__version__ = "0.1.5"
++__version__ = "0.1.6"
