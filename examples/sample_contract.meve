@@ -1,0 +1,12 @@
+{
+  "version": "0.1.5",
+  "document_hash": "sha256:9c56cc51b374c3ba1890f8c9e8c8d5a3",
+  "timestamp": "2025-08-28T14:05:00Z",
+  "issuer": "did:key:z6MkhEFGH67890",
+  "signature": "ed25519:9a0bcd...xyz",
+  "metadata": {
+    "name": "Employment Contract",
+    "tags": ["HR", "contract"],
+    "note": "Contrat de travail validé"
+  }
+}
