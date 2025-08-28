@@ -1,22 +1,21 @@
 from __future__ import annotations
-import os
+
+from pathlib import Path
 from .utils import sha256_path, iso8601_now, guess_mime, format_identity
 
 
-def generate_meve(path: str, issuer: dict) -> dict:
+def generate_meve(file_path: str | Path, issuer: str, signature: str | None = None) -> dict:
     """
-    Génère un petit 'proof' .meve (objet Python) pour le fichier `path`.
-    Ne touche pas au disque pour simplifier les tests.
+    Create a minimal .meve-proof payload for a file.
+    (This is an in-memory dict used by tests; writing to disk is up to the CLI.)
     """
-    if not os.path.exists(path):
-        raise FileNotFoundError(path)
-
-    proof = {
-        "file": os.path.basename(path),
-        "hash": sha256_path(path),
-        "mime": guess_mime(path),
-        "timestamp": iso8601_now(),
+    p = Path(file_path)
+    return {
+        "spec": "MEVE/1",
+        "file_name": p.name,
+        "mime": guess_mime(p),
+        "sha256": sha256_path(p),
+        "issued_at": iso8601_now(),
         "issuer": format_identity(issuer),
-        "version": "0.1",
+        "signature": signature or "",
     }
-    return proof
