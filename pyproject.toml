@@ -1,11 +1,22 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "digitalmeve"
-version = "0.1.4"
-description = "Outil de génération et vérification de preuves numériques"
-authors = [{name = "Ton Nom"}]
-dependencies = []
-requires-python = ">=3.8"
+description = "DigitalMeve — The Certified Digital Memory (.MEVE)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+authors = [{ name = "BACoul" }]
+dynamic = ["version"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["digitalmeve*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "digitalmeve.__version__"}
