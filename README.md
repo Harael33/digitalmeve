@@ -1,5 +1,15 @@
 # 🌍 DigitalMeve — The .MEVE Standard
 
+# DigitalMeve — The Certified Digital Memory (.MEVE)
+
+[![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
+[![Publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)
+[![PyPI version](https://img.shields.io/pypi/v/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)
+[![Python versions](https://img.shields.io/pypi/pyversions/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)
+[![Downloads](https://static.pepy.tech/badge/digitalmeve/month)](https://pepy.tech/project/digitalmeve)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+
 **The first universal format to prove, certify and verify the authenticity of any digital document.**  
 DigitalMeve introduces `.meve` (Memory Verified), a simple and universal way to **timestamp, hash, and certify documents**.
 
