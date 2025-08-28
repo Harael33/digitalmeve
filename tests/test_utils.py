@@ -1,9 +1,9 @@
-# tests/test_utils.py
+import pytest
+from digitalmeve.utils import format_identity
 
-from src.utils import add
-
-def test_add_simple():
-    assert add(2, 3) == 5
-
-def test_add_negative():
-    assert add(-1, -1) == -2
+def test_format_identity_returns_dict():
+    data = {"name": "John", "age": 30}
+    result = format_identity(data)
+    assert isinstance(result, dict)
+    assert "name" in result
+    assert result["name"] == "John"
