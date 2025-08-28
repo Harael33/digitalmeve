@@ -2,33 +2,48 @@ name: publish
 
 on:
   release:
-    types: [published]   # seulement quand tu publies une Release
-  workflow_dispatch:     # déclenchement manuel si besoin
+    types: [published]
+  workflow_dispatch:
 
 permissions:
-  id-token: write        # Obligatoire pour Trusted Publishing (OIDC)
   contents: read
+  id-token: write
 
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
-    environment: pypi
-    if: startsWith(github.ref, 'refs/tags/v')   # sécurité : seulement les tags "v0.1.2" etc.
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.9"
 
-      - name: Install build backend
+      - name: Install build
         run: pip install build
 
-      - name: Build wheel/sdist
+      - name: Build sdist & wheel
         run: python -m build
 
-      - name: Publish to PyPI (Trusted Publishing)
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish to PyPI (Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist
+          skip-existing: true
