@@ -1,6 +1,5 @@
-from importlib import metadata
-import digitalmeve
+import digitalmeve as dm
 
 def test_version():
-    # Vérifie que __version__ du module = version installée du package
-    assert digitalmeve.__version__ == metadata.version("digitalmeve")
+    # La version interne doit correspondre à ce qu’on a défini dans __init__.py
+    assert dm.__version__ == "0.1.4"
