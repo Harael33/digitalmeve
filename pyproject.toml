@@ -1,2 +1,3 @@
 [project]
-version = "0.1.2"
+name = "digitalmeve"
+version = "0.1.3"
