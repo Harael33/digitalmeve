@@ -42,4 +42,11 @@ def generate_meve(
 
 def save_meve(proof: Dict[str, Any], out_path: str | Path) -> Path:
     """
-    Sauvegarde le dict
+    Sauvegarde le dict de preuve .meve vers un fichier JSON pretty.
+    """
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8") as f:
+        json.dump(proof, f, ensure_ascii=False, indent=2, sort_keys=True)
+        f.write("\n")
+    return out
