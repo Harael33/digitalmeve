@@ -1,4 +1,4 @@
-from digitalmeve import __version__
+import digitalmeve
 
 def test_version():
-    assert __version__ == "0.1.4"
+    assert digitalmeve.__version__ == "0.1.4"
