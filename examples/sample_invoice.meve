@@ -1,0 +1,12 @@
+{
+  "version": "0.1.5",
+  "document_hash": "sha256:1f3870be274f6c49b3e31a0c6728957f",
+  "timestamp": "2025-08-28T14:00:00Z",
+  "issuer": "did:key:z6MkhABCD12345",
+  "signature": "ed25519:4f5a9c...xyz",
+  "metadata": {
+    "name": "Invoice #2025-001",
+    "tags": ["finance", "invoice"],
+    "note": "Facture certifiée par DigitalMeve"
+  }
+}
