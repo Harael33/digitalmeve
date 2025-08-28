@@ -2,47 +2,33 @@ name: publish
 
 on:
   release:
-    types: [published]
+    types: [published]   # seulement quand tu publies une Release
+  workflow_dispatch:     # déclenchement manuel si besoin
 
 permissions:
-  id-token: write   # OIDC pour Trusted Publisher (PyPI)
+  id-token: write        # Obligatoire pour Trusted Publishing (OIDC)
   contents: read
 
 jobs:
   build-and-publish:
-    name: Build & Publish to PyPI
     runs-on: ubuntu-latest
-    environment: pypi   # doit correspondre à l’environnement créé dans GitHub (Settings > Environments > pypi)
-
+    environment: pypi
+    if: startsWith(github.ref, 'refs/tags/v')   # sécurité : seulement les tags "v0.1.2" etc.
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install build backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
+        run: pip install build
 
-      - name: Sanity check
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -c "import pathlib; print('root:', pathlib.Path('.').resolve())"
-          python - <<'PY'
-from pathlib import Path
-print('pyproject exists:', Path('pyproject.toml').exists())
-print('src init exists:', Path('src/__init__.py').exists())
-PY
-
-      - name: Build sdist & wheel
+      - name: Build wheel/sdist
         run: python -m build
 
-      - name: Publish to PyPI (Trusted Publisher)
+      - name: Publish to PyPI (Trusted Publishing)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          # Pas de token : OIDC via l’environnement "pypi"
-          print-hash: true
+          packages-dir: dist
