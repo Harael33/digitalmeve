@@ -1,9 +1,6 @@
-from __future__ import annotations
+__all__ = ["sha256_path", "iso8601_now", "guess_mime", "format_identity", "verify_identity"]
 
-__all__ = ["generate_meve", "verify_identity", "verify_file", "__version__"]
+from .utils import sha256_path, iso8601_now, guess_mime, format_identity
+from .verifier import verify_identity
 
-# Aligne la version avec le badge/tests (mets la même que dans pyproject si tu publies)
 __version__ = "0.1.4"
-
-from .generator import generate_meve  # noqa: E402
-from .verifier import verify_identity, verify_file  # noqa: E402
