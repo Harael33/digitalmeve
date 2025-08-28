@@ -1,21 +1,21 @@
-from __future__ import annotations
+import os
+from .utils import sha256_path, iso8601_now, guess_mime
 
-from pathlib import Path
-from .utils import sha256_path, iso8601_now, guess_mime, format_identity
-
-
-def generate_meve(file_path: str | Path, issuer: str, signature: str | None = None) -> dict:
+def generate_meve(file_path: str, issuer: str = "unknown", signature: str | None = None) -> dict:
     """
-    Create a minimal .meve-proof payload for a file.
-    (This is an in-memory dict used by tests; writing to disk is up to the CLI.)
+    Génère un dictionnaire représentant les métadonnées d'un fichier.
+    - file_path : chemin du fichier
+    - issuer : émetteur (par défaut "unknown")
+    - signature : signature optionnelle
+
+    Retourne un dict avec : path, hash, size, mime, created_at, issuer, signature.
     """
-    p = Path(file_path)
     return {
-        "spec": "MEVE/1",
-        "file_name": p.name,
-        "mime": guess_mime(p),
-        "sha256": sha256_path(p),
-        "issued_at": iso8601_now(),
-        "issuer": format_identity(issuer),
-        "signature": signature or "",
+        "path": file_path,
+        "hash": sha256_path(file_path),
+        "size": os.path.getsize(file_path),
+        "mime": guess_mime(file_path),
+        "created_at": iso8601_now(),
+        "issuer": issuer,
+        "signature": signature,
     }
