@@ -1,14 +1,9 @@
-__version__ = "0.1.4"  # aligne avec ton test_version.py/tag
+from __future__ import annotations
 
-from .generator import generate_meve
-from .verifier import verify_identity
-from .utils import format_identity, sha256_path, iso8601_now, guess_mime
+__all__ = ["generate_meve", "verify_identity", "verify_file", "__version__"]
 
-__all__ = [
-    "generate_meve",
-    "verify_identity",
-    "format_identity",
-    "sha256_path",
-    "iso8601_now",
-    "guess_mime",
-]
+# Aligne la version avec le badge/tests (mets la même que dans pyproject si tu publies)
+__version__ = "0.1.4"
+
+from .generator import generate_meve  # noqa: E402
+from .verifier import verify_identity, verify_file  # noqa: E402
