@@ -1,52 +1,22 @@
 from __future__ import annotations
-
-import json
-from pathlib import Path
-from typing import Optional, Dict, Any
-
-from .utils import sha256_path, iso8601_now, guess_mime
+import os
+from .utils import sha256_path, iso8601_now, guess_mime, format_identity
 
 
-def generate_meve(
-    input_path: str | Path,
-    issuer: Optional[str] = None,
-    mime_type: Optional[str] = None,
-) -> Dict[str, Any]:
+def generate_meve(path: str, issuer: dict) -> dict:
     """
-    Génère la preuve .meve (en mémoire) pour un fichier donné.
-    - input_path  : chemin du document d'origine
-    - issuer      : identifiant de l'émetteur (email, org…, optionnel)
-    - mime_type   : MIME explicite (sinon déduit)
-
-    Retourne un dict prêt à être sérialisé en JSON.
+    Génère un petit 'proof' .meve (objet Python) pour le fichier `path`.
+    Ne touche pas au disque pour simplifier les tests.
     """
-    p = Path(input_path)
-    if not p.is_file():
-        raise FileNotFoundError(f"Input file not found: {p}")
+    if not os.path.exists(path):
+        raise FileNotFoundError(path)
 
     proof = {
-        "format": "MEVE",
-        "version": "1",
-        "doc": {
-            "name": p.name,
-            "mime": mime_type or guess_mime(p),
-            "sha256": sha256_path(p),
-            "size": p.stat().st_size,
-        },
-        "issuer": issuer,
-        "generated_at": iso8601_now(),
-        # "signature": "base64…"  # (optionnel si tu ajoutes une signature plus tard)
+        "file": os.path.basename(path),
+        "hash": sha256_path(path),
+        "mime": guess_mime(path),
+        "timestamp": iso8601_now(),
+        "issuer": format_identity(issuer),
+        "version": "0.1",
     }
     return proof
-
-
-def save_meve(proof: Dict[str, Any], out_path: str | Path) -> Path:
-    """
-    Sauvegarde le dict de preuve .meve vers un fichier JSON pretty.
-    """
-    out = Path(out_path)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    with out.open("w", encoding="utf-8") as f:
-        json.dump(proof, f, ensure_ascii=False, indent=2, sort_keys=True)
-        f.write("\n")
-    return out
