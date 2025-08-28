@@ -1,5 +1,6 @@
-from src import __version__
+from importlib import metadata
+import digitalmeve
 
 def test_version():
-    """Ensure the package version is correct."""
-    assert __version__ == "0.1.1"
+    # Vérifie que __version__ du module = version installée du package
+    assert digitalmeve.__version__ == metadata.version("digitalmeve")
