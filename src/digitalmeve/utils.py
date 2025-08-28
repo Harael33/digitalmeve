@@ -1,32 +1,34 @@
-from __future__ import annotations
-
 import hashlib
 import mimetypes
-from pathlib import Path
-from datetime import datetime, timezone
+import datetime
+from typing import Union
 
-
-def sha256_path(path: str | Path) -> str:
-    """Return the hex SHA-256 digest of a file."""
-    p = Path(path)
+def sha256_path(path: str) -> str:
+    """Calcule le SHA256 d'un fichier donné."""
     h = hashlib.sha256()
-    with p.open("rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
     return h.hexdigest()
 
-
 def iso8601_now() -> str:
-    """UTC timestamp in strict ISO-8601 format (Z suffix)."""
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    """Retourne l'heure actuelle en ISO 8601 (UTC)."""
+    return datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
+def guess_mime(path: str) -> str:
+    """Devine le type MIME d'un fichier, ou 'application/octet-stream' par défaut."""
+    mime, _ = mimetypes.guess_type(path)
+    return mime or "application/octet-stream"
 
-def guess_mime(path: str | Path) -> str:
-    """Best-effort MIME type for a path."""
-    m, _ = mimetypes.guess_type(str(path))
-    return m or "application/octet-stream"
-
-
-def format_identity(identity: str) -> str:
-    """Normalize an issuer identity for stable comparisons."""
+def format_identity(identity: Union[str, dict, None]) -> str:
+    """
+    Formate une identité en string normalisée.
+    - None → ""
+    - dict → str(dict)
+    - string → strip + lower
+    """
+    if identity is None:
+        return ""
+    if not isinstance(identity, str):
+        identity = str(identity)
     return identity.strip().lower()
