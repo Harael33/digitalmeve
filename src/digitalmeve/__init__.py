@@ -12,3 +12,9 @@ try:
     from .core import generate_meve, verify_meve  # noqa: F401
 except Exception:
     pass
+# src/digitalmeve/__init__.py
+__version__ = "1.6.0"
+
+from .core import generate_meve, verify_meve
+
+__all__ = ["generate_meve", "verify_meve", "__version__"]
