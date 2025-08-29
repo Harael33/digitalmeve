@@ -4,41 +4,38 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "digitalmeve"
-version = "0.1.5"
+version = "1.6.0"
 description = "DigitalMeve — The Certified Digital Memory (.MEVE) standard. Timestamp, hash, certify & verify documents."
 readme = "README.md"
-license = { file = "LICENSE" }
 requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
 authors = [
   { name = "DigitalMeve Team" }
 ]
 keywords = ["meve", "digital memory", "timestamp", "hash", "certificate", "verify", "standard"]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent",
+  "Topic :: Security :: Cryptography",
+  "Topic :: Software Development :: Libraries"
 ]
 
-# Si tu n'as pas de dépendances runtime, laisse vide.
-# Sinon ajoute-les ici, ex:
-# dependencies = ["requests>=2.31"]
+# Ajoute tes dépendances runtime ici si besoin :
+# dependencies = ["cryptography>=41", "click>=8.1"]
 
 [project.urls]
 Homepage = "https://github.com/BACOUL/digitalmeve"
 Repository = "https://github.com/BACOUL/digitalmeve"
 Issues = "https://github.com/BACOUL/digitalmeve/issues"
+Documentation = "https://github.com/BACOUL/digitalmeve/tree/main/docs"
+Changelog = "https://github.com/BACOUL/digitalmeve/blob/main/CHANGELOG.md"
 
-# Nos deux scripts CLI sont des fichiers à la racine :
-# on les expose comme "scripts" (pas console_scripts) côté setuptools.
-# L'utilisateur pourra les appeler via `python -m pip install digitalmeve`
-# puis exécutables `cli_generate.py` et `cli_verify.py` seront installés.
-[tool.setuptools]
-script-files = ["cli_generate.py", "cli_verify.py"]
-
-# Layout en mode src/
 [tool.setuptools.package-dir]
 "" = "src"
 
@@ -46,12 +43,6 @@ script-files = ["cli_generate.py", "cli_verify.py"]
 where = ["src"]
 include = ["digitalmeve*"]
 
-# Si tu veux inclure des fichiers non-Python dans le paquet
-# (ex: schémas, exemples), dé-commente et adapte :
-# [tool.setuptools.package-data]
-# "digitalmeve" = ["py.typed", "schemas/*.json", "examples/*"]
-
-# Pytest (la CI l'utilise déjà, on garde la même config ici aussi)
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
