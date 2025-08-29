@@ -1,17 +1,16 @@
----
 name: Feature request
-about: Proposer une amélioration
-labels: enhancement
----
-
-**Problème lié**
-Quel besoin / douleur utilisateur ?
-
-**Solution proposée**
-…
-
-**Alternatives**
-…
-
-**Contexte**
-…
+description: Proposer une amélioration ou une nouvelle capacité
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: value
+    attributes:
+      label: Valeur / cas d’usage
+      description: Pourquoi est-ce utile pour .meve ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposition
+      placeholder: Décris l’API/CLI/format…
