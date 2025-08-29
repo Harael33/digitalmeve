@@ -1,24 +1,52 @@
 name: publish
+
 on:
   release:
     types: [published]
 
 jobs:
   build-and-publish:
-    environment: pypi
-    permissions:
-      id-token: write   # OIDC pour PyPI Trusted Publisher
-      contents: read
+    name: Build & Publish to PyPI (OIDC)
     runs-on: ubuntu-latest
+
+    # Permissions nécessaires à l'OIDC pour PyPI Trusted Publishing
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install build backend
+
+      - name: Upgrade build toolchain
         run: |
-          python -m pip install --upgrade pip build
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Sanity check version match (__init__ vs pyproject)
+        run: |
+          python - << 'PY'
+          import tomllib, pathlib, re, sys
+          init = pathlib.Path("src/digitalmeve/__init__.py").read_text(encoding="utf-8")
+          m = re.search(r'__version__\s*=\s*[\'"]([^\'"]+)[\'"]', init)
+          v_py = m.group(1) if m else None
+          with open("pyproject.toml","rb") as f:
+            v_toml = tomllib.load(f)["project"]["version"]
+          assert v_py == v_toml, f"Version mismatch: __init__={v_py} vs pyproject={v_toml}"
+          print("Version OK:", v_py)
+          PY
+
       - name: Build sdist & wheel
         run: python -m build
+
+      # Publication via OIDC (aucun secret requis, PyPI valide l'identité du workflow)
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          # remove 'skip-existing' pour échouer si la version existe déjà
