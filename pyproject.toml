@@ -1,72 +1,31 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "digitalmeve"
-version = "1.6.0"
-description = "DigitalMeve — The Certified Digital Memory (.MEVE) standard. Timestamp, hash, certify & verify documents."
+version = "0.1.6"
+description = "DigitalMeve — le premier format universel (.meve) pour certifier l’existence, l’intégrité et l’authenticité des documents."
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
-license = { text = "MIT" }
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
 authors = [
-  { name = "DigitalMeve Team" }
+    { name = "Jeason Bacoul", email = "jeason.bacoul@gmail.com" }
 ]
-keywords = ["meve", "digital memory", "timestamp", "hash", "certificate", "verify", "standard"]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Topic :: Security :: Cryptography",
-  "Topic :: Software Development :: Libraries"
-]
-
-# Ajoute tes dépendances runtime ici si besoin :
-# dependencies = ["cryptography>=41", "click>=8.1"]
 
 [project.urls]
 Homepage = "https://github.com/BACOUL/digitalmeve"
 Repository = "https://github.com/BACOUL/digitalmeve"
 Issues = "https://github.com/BACOUL/digitalmeve/issues"
-Documentation = "https://github.com/BACOUL/digitalmeve/tree/main/docs"
-Changelog = "https://github.com/BACOUL/digitalmeve/blob/main/CHANGELOG.md"
-
-[tool.setuptools.package-dir]
-"" = "src"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["digitalmeve*"]
 
 [tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
 testpaths = ["tests"]
-addopts = "-q"
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"
 
-[tool.ruff]
-line-length = 100
-target-version = "py310"
-exclude = ["docs", "build", "dist"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
-ignore = ["E203"]  # compatible avec black si tu l'ajoutes plus tard
-
-[tool.mypy]
-python_version = "3.10"
-warn_unused_configs = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_return_any = true
-disallow_untyped_defs = false
-no_implicit_optional = true
-strict_optional = true
-mypy_path = "src"
-plugins = []
+[project.scripts]
+meve-generate = "digitalmeve.cli_generate:main"
+meve-verify = "digitalmeve.cli_verify:main"
