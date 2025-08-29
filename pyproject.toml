@@ -29,3 +29,9 @@ testpaths = ["tests"]
 [project.scripts]
 meve-generate = "digitalmeve.cli_generate:main"
 meve-verify = "digitalmeve.cli_verify:main"
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+
+[tool.isort]
+profile = "black"
