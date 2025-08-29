@@ -1,4 +1,1 @@
-pytest-cov>=4.1
-mypy>=1.10
-ruff>=0.5.0
-types-setuptools
+# runtime (MVP sans dépendances externes)
