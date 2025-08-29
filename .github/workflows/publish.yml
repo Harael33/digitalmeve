@@ -9,7 +9,6 @@ jobs:
     name: Build & Publish to PyPI (OIDC)
     runs-on: ubuntu-latest
 
-    # Permissions nécessaires à l'OIDC pour PyPI Trusted Publishing
     permissions:
       id-token: write
       contents: read
@@ -28,10 +27,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
 
-      - name: Sanity check version match (__init__ vs pyproject)
+      - name: Sanity check version match
         run: |
           python - << 'PY'
-          import tomllib, pathlib, re, sys
+          import tomllib, pathlib, re
           init = pathlib.Path("src/digitalmeve/__init__.py").read_text(encoding="utf-8")
           m = re.search(r'__version__\s*=\s*[\'"]([^\'"]+)[\'"]', init)
           v_py = m.group(1) if m else None
@@ -44,9 +43,7 @@ jobs:
       - name: Build sdist & wheel
         run: python -m build
 
-      # Publication via OIDC (aucun secret requis, PyPI valide l'identité du workflow)
-      - name: Publish to PyPI
+      - name: Publish to PyPI (Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           print-hash: true
-          # remove 'skip-existing' pour échouer si la version existe déjà
