@@ -2,9 +2,9 @@ name: tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   pytest:
@@ -25,10 +25,10 @@ jobs:
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
-      - name: Install project (editable) + pytest
+      - name: Install project + pytest
         run: |
           pip install -e .
           pip install pytest
 
-      - name: Run tests
+      - name: Run pytest
         run: pytest -v
