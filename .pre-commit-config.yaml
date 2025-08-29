@@ -1,14 +1,13 @@
 # .pre-commit-config.yaml
-ci:
-  skip: []
-  autoupdate_schedule: quarterly
+# Configuration standardisée DigitalMeve (v1.6)
+# Mise à jour pour supprimer les stages dépréciés et utiliser les dernières versions stables
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
       - id: check-added-large-files
-      - id: check-merge-conflict
+      - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
@@ -16,10 +15,18 @@ repos:
     rev: 24.8.0
     hooks:
       - id: black
-        args: ["--line-length=88"]
+        language_version: python3
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        name: isort (python imports)
+        language_version: python3
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        additional_dependencies: []
+        language_version: python3
