@@ -1,0 +1,10 @@
+site_name: DigitalMeve Docs
+repo_url: https://github.com/BACOUL/digitalmeve
+theme:
+  name: mkdocs
+nav:
+  - Accueil: index.md
+  - Spécification .MEVE: meve-spec.md
+  - CLI: cli.md
+  - Sécurité: security.md
+  - Changelog: changelog.md
