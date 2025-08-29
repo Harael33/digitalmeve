@@ -1,21 +1,15 @@
-import os
-from .utils import sha256_path, iso8601_now, guess_mime
+from __future__ import annotations
 
-def generate_meve(file_path: str, issuer: str = "unknown", signature: str | None = None) -> dict:
-    """
-    Génère un dictionnaire représentant les métadonnées d'un fichier.
-    - file_path : chemin du fichier
-    - issuer : émetteur (par défaut "unknown")
-    - signature : signature optionnelle
+from pathlib import Path
+from typing import Any, Dict, Union
 
-    Retourne un dict avec : path, hash, size, mime, created_at, issuer, signature.
+from .core import generate_meve as _gen
+
+
+def generate(
+    infile: Union[str, Path], outdir: Union[str, Path, None] = None
+) -> Dict[str, Any]:
     """
-    return {
-        "path": file_path,
-        "hash": sha256_path(file_path),
-        "size": os.path.getsize(file_path),
-        "mime": guess_mime(file_path),
-        "created_at": iso8601_now(),
-        "issuer": issuer,
-        "signature": signature,
-    }
+    Petit wrapper conservé pour compatibilité interne.
+    """
+    return _gen(infile=infile, outdir=outdir)
