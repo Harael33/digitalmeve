@@ -1,1 +1,4 @@
-# runtime (MVP sans dépendances externes)
+pytest
+black
+isort
+flake8
