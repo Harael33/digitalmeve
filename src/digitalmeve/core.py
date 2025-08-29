@@ -20,8 +20,12 @@ def _read_bytes(path: Path) -> bytes:
 
 
 def _now_iso() -> str:
-    # timezone-aware en UTC
-    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return (
+        datetime.now(UTC)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def generate_meve(
@@ -29,12 +33,6 @@ def generate_meve(
     outdir: Union[str, Path, None] = None,
     issuer: str = "DigitalMeve Test Suite",
 ) -> Dict[str, Any]:
-    """
-    Crée une 'preuve' MEVE à partir d'un fichier.
-
-    - écrit <filename>.meve.json à côté du fichier source (ou dans outdir)
-    - retourne le dict MEVE (utile pour la suite de tests)
-    """
     in_path = Path(infile)
     data = _read_bytes(in_path)
 
@@ -51,7 +49,6 @@ def generate_meve(
             "mime": mime,
             "sha256": _sha256_bytes(data),
         },
-        # petit aperçu encodé (optionnel)
         "preview_b64": base64.b64encode(data[:64]).decode("ascii"),
         "created_at": _now_iso(),
     }
@@ -59,7 +56,6 @@ def generate_meve(
     out_dir = Path(outdir) if outdir is not None else in_path.parent
     out_file = out_dir / f"{in_path.name}.meve.json"
     out_file.write_text(json.dumps(meve, ensure_ascii=False, indent=2))
-
     return meve
 
 
@@ -67,10 +63,6 @@ def verify_meve(
     meve_file_or_dict: Union[str, Path, Dict[str, Any]],
     expected_issuer: Union[str, None] = None,
 ) -> Tuple[bool, Dict[str, Any]]:
-    """
-    Vérifie la structure minimale d'un MEVE et (optionnel) l'issuer attendu.
-    Retourne (ok, info) où info est le dict MEVE ou le motif d'erreur.
-    """
     if isinstance(meve_file_or_dict, (str, Path)):
         path = Path(meve_file_or_dict)
         try:
@@ -86,7 +78,10 @@ def verify_meve(
         return False, {"error": f"Missing required field: {missing[0]}"}
 
     if expected_issuer and payload.get("issuer") != expected_issuer:
-        return False, {"error": "issuer mismatch", "got": payload.get("issuer")}
+        return False, {
+            "error": "issuer mismatch",
+            "got": payload.get("issuer"),
+        }
 
     subject = payload.get("subject", {})
     required_subject = {"filename", "size", "mime", "sha256"}
