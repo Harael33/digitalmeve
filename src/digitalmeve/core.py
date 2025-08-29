@@ -1,41 +1,14 @@
-"""
-Core functions for DigitalMeve (.meve format)
-"""
-
-from pathlib import Path
-import hashlib
-import time
-
-
-def generate_meve(file_path: str) -> dict:
+def generate_meve():
     """
-    Generate a MEVE certification (hash + timestamp) for a given file.
+    Placeholder implementation for generate_meve.
+    Replace with real logic later.
     """
-    file = Path(file_path)
-    if not file.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-
-    with open(file, "rb") as f:
-        content = f.read()
-    digest = hashlib.sha256(content).hexdigest()
-
-    return {
-        "file": file.name,
-        "timestamp": int(time.time()),
-        "hash": digest,
-    }
+    return "generated"
 
 
-def verify_meve(file_path: str, expected_hash: str) -> bool:
+def verify_meve():
     """
-    Verify a file against a given SHA-256 hash.
+    Placeholder implementation for verify_meve.
+    Replace with real logic later.
     """
-    file = Path(file_path)
-    if not file.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-
-    with open(file, "rb") as f:
-        content = f.read()
-    digest = hashlib.sha256(content).hexdigest()
-
-    return digest == expected_hash
+    return True
