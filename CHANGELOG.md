@@ -1,4 +1,16 @@
-# Changelog — DigitalMeve
+## [1.6.0] - 2025-08-29
+### Added
+- Stabilisation publique de la branche **1.x** (passage en 1.6.0).
+- Documentation initiale (overview/specification/examples).
+- Module `core.py` (implémentation de base) + tests.
+
+### Changed
+- Alignement versionning (`__init__`, `pyproject.toml`, tests).
+- Nettoyage et robustesse `pyproject.toml`.
+
+### CI/CD
+- Tests (Python 3.10–3.12) ✅
+- Publication PyPI via **Trusted Publisher (OIDC)** prête.# Changelog — DigitalMeve
 
 Ce projet suit [SemVer](https://semver.org/lang/fr/) et le format recommandé par [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
