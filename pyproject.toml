@@ -1,8 +1,46 @@
---- a/pyproject.toml
-+++ b/pyproject.toml
-@@
- [project]
--name = "digitalmeve"
--version = "0.1.5"
-+name = "digitalmeve"
-+version = "0.1.6"
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digitalmeve"
+version = "0.1.5"
+description = "DigitalMeve — The Certified Digital Memory (.MEVE) standard for timestamping, hashing and certifying documents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "BACoul", email = "jeason.bacoul@gmail.com" }
+]
+keywords = ["digital memory", "certification", "hash", "timestamp", "meve", "standard"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries"
+]
+
+dependencies = [
+    "cryptography>=41.0.0",
+    "click>=8.1.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/BACOUL/digitalmeve"
+Documentation = "https://github.com/BACOUL/digitalmeve/tree/main/docs"
+Repository = "https://github.com/BACOUL/digitalmeve"
+Changelog = "https://github.com/BACOUL/digitalmeve/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-v"
+testpaths = [
+    "tests"
+]
