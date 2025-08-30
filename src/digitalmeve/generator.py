@@ -28,7 +28,7 @@ def generate_meve(
 
     Clés requises par la suite de tests :
       - meve_version, issuer, subject{ filename,size,hash_sha256 }, timestamp, metadata
-      - mime_type, et top-level "hash" (même valeur que subject.hash_sha256)
+      - mime_type, top-level "hash", et compat top-level file_name / file_size
     """
     path = Path(file_path)
     if not path.exists():
@@ -47,7 +47,10 @@ def generate_meve(
             "size": path.stat().st_size,
             "hash_sha256": content_hash,
         },
-        "hash": content_hash,  # <= exigé par tests/test_generator.py
+        # compat attendue par certains tests
+        "file_name": path.name,
+        "file_size": path.stat().st_size,
+        "hash": content_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
         "mime_type": mime,
