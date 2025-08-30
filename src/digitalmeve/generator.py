@@ -1,21 +1,25 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Union, Dict, Any
+from typing import Any, Dict, Union
 
 from .core import generate_meve as _core_generate_meve
 
 
 def generate_meve(
-    infile: Union[str, Path],
-    outfile: Union[str, Path, None] = None,
-    issuer: str | None = None,
-) -> Dict[str, Any] | str:
+    file_path: Union[str, Path],
+    issuer: str = "tester",
+    meve_version: str = "1.0",
+) -> Dict[str, Any]:
     """
-    Mince « wrapper » autour de core.generate_meve.
+    Public wrapper for the core.generate_meve function.
 
-    - Si `outfile` est fourni, on écrit le JSON et on retourne le chemin (str).
-    - Sinon, on retourne directement le dict MEVE (comportement de core).
+    Args:
+        file_path: Path to the file to be converted into MEVE.
+        issuer: The identity of the issuer creating the MEVE file.
+        meve_version: Version string for MEVE format.
+
+    Returns:
+        A dictionary containing the MEVE metadata.
     """
-    meve = _core_generate_meve(infile=infile, outfile=outfile, issuer=issuer)
-    return str(outfile) if outfile else meve
+    return _core_generate_meve(file_path, issuer=issuer, meve_version=meve_version)
