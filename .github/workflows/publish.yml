@@ -2,11 +2,8 @@ name: publish
 
 on:
   release:
-    types: [published]      # se déclenche quand tu crées une release
-  push:
-    tags:
-      - "v*"                # se déclenche quand tu pousses un tag vX.Y.Z
-  workflow_dispatch: {}      # tu peux aussi le lancer à la main
+    types: [published]
+  workflow_dispatch: {}   # permet de relancer manuellement
 
 jobs:
   build-and-publish:
@@ -44,10 +41,38 @@ jobs:
           print("Version OK:", v_py)
           PY
 
+      - name: Determine version & check if exists on PyPI
+        id: pypi
+        run: |
+          python - << 'PY'
+          import json, os, re, tomllib, urllib.request
+          version = tomllib.load(open("pyproject.toml","rb"))["project"]["version"]
+          exists = False
+          try:
+              with urllib.request.urlopen("https://pypi.org/pypi/digitalmeve/json", timeout=10) as r:
+                  data = json.load(r)
+              exists = version in set(data.get("releases", {}).keys())
+          except Exception:
+              exists = False
+          print(f"version={version} exists_on_pypi={exists}")
+          with open(os.environ["GITHUB_OUTPUT"], "w") as f:
+              f.write(f"version={version}\n")
+              f.write(f"exists={'true' if exists else 'false'}\n")
+          PY
+
       - name: Build sdist & wheel
         run: python -m build
+        if: steps.pypi.outputs.exists == 'false'   # inutile de builder si déjà publié
 
       - name: Publish to PyPI (Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.pypi.outputs.exists == 'false'
         with:
           print-hash: true
+
+      - name: Skip publish (already on PyPI)
+        if: steps.pypi.outputs.exists == 'true'
+        run: |
+          echo "Version ${VERSION} already on PyPI – skipping publish."
+        env:
+          VERSION: ${{ steps.pypi.outputs.version }}
