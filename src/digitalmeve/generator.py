@@ -33,4 +33,6 @@ def generate_meve(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
         "preview_b64": preview_b64,
+        # clé attendue par le test
+        "issuer": "Personal",
     }
