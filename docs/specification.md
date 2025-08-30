@@ -1,23 +1,24 @@
-# 📜 DigitalMeve — Specification v0.1.5
+# DigitalMeve — MEVE/1 Specification (draft)
 
-Cette spécification décrit le format **.meve (Memory Verified)** tel qu’implémenté dans DigitalMeve v0.1.5.
+## 1) Purpose
+`.meve` provides a portable, human-readable proof for any digital file:
+- Existence at time T (UTC timestamp)
+- Integrity of the exact bytes (SHA-256)
+- Issuer linkage (Personal / Pro / Official), **computed by the verifier** — never user-declared
 
----
-
-## 1. Structure du fichier
-
-Un fichier `.meve` est un objet JSON **lisible et universel**, avec les champs suivants :
+## 2) Minimal JSON (MEVE/1)
 
 ```json
 {
-  "version": "0.1.5",
-  "document_hash": "sha256:...",
-  "timestamp": "2025-08-28T12:34:56Z",
-  "issuer": "did:key:z6Mkh...",
-  "signature": "ed25519:...",
-  "metadata": {
-    "name": "optional",
-    "tags": ["optional"],
-    "note": "optional"
-  }
+  "issuer": "Personal",
+  "meve_version": "1.0",
+  "hash": "<sha256 of the file>",
+  "preview_b64": "<optional base64 preview of first bytes>",
+  "subject": {
+    "filename": "sample.pdf",
+    "size": 12345,
+    "hash_sha256": "<sha256 of the file>"
+  },
+  "timestamp": "2025-08-30T12:34:56Z",
+  "metadata": {}
 }
