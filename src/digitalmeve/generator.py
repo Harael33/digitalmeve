@@ -16,12 +16,10 @@ def _file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _small_preview_b64(path: Path, limit: int = 64) -> str:
-    try:
-        data = path.read_bytes()[:limit]
-        return base64.b64encode(data).decode("ascii")
-    except Exception:
-        return ""
+def _preview_b64(path: Path, limit: int = 64) -> str:
+    with path.open("rb") as f:
+        data = f.read(limit)
+    return base64.b64encode(data).decode("ascii")
 
 
 def generate_meve(
@@ -31,34 +29,37 @@ def generate_meve(
     issuer: str = "Personal",
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    """
+    Génère une preuve 'MEVE' minimale sous forme de dict.
+    Si `outdir` est fourni, écrit aussi <filename>.meve.json dans ce répertoire.
+    Les tests attendent au moins les clés suivantes au niveau racine :
+    issuer, meve_version, hash, preview_b64, subject, timestamp, metadata.
+    """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"file not found: {path}")
 
-    content_hash = _file_sha256(path)
-    preview_b64 = _small_preview_b64(path)
+    digest = _file_sha256(path)
 
     meve: Dict[str, Any] = {
         "issuer": issuer,
         "meve_version": "1.0",
-        "hash": content_hash,
-        "preview_b64": preview_b64,
-        "metadata": metadata or {},
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "hash": digest,
+        "preview_b64": _preview_b64(path),
         "subject": {
             "filename": path.name,
             "size": path.stat().st_size,
-            "hash_sha256": content_hash,
+            "hash_sha256": digest,
         },
-        # champs tolérés par d'autres bouts de code
-        "file_name": path.name,
-        "file_size": path.stat().st_size,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "metadata": metadata or {},
     }
 
-    if outdir:
+    if outdir is not None:
         outdir = Path(outdir)
         outdir.mkdir(parents=True, exist_ok=True)
-        out_file = outdir / f"{path.name}.meve.json"
-        out_file.write_text(json.dumps(meve, ensure_ascii=False, indent=2))
+        outfile = outdir / f"{path.name}.meve.json"
+        with outfile.open("w", encoding="utf-8") as f:
+            json.dump(meve, f, ensure_ascii=False, indent=2)
 
     return meve
