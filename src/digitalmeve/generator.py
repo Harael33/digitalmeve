@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 from datetime import datetime, timezone
 from hashlib import sha256
@@ -16,6 +17,12 @@ def _file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def _preview_b64(path: Path, limit: int = 64) -> str:
+    """Retourne un aperçu base64 (jusqu’à `limit` octets) du fichier."""
+    data = path.read_bytes()[:limit]
+    return base64.b64encode(data).decode("ascii")
+
+
 def generate_meve(
     file_path: Union[str, Path],
     *,
@@ -26,9 +33,10 @@ def generate_meve(
     """
     Génère un dict MEVE minimal et, si outdir est fourni, écrit <filename>.meve.json.
 
-    Clés requises par la suite de tests :
+    Clés requises par les tests :
       - meve_version, issuer, subject{ filename,size,hash_sha256 }, timestamp, metadata
-      - mime_type, top-level "hash", et compat top-level file_name / file_size
+      - mime_type, top-level "hash", compat top-level file_name / file_size
+      - preview_b64 (aperçu base64 des premiers octets du fichier)
     """
     path = Path(file_path)
     if not path.exists():
@@ -47,13 +55,14 @@ def generate_meve(
             "size": path.stat().st_size,
             "hash_sha256": content_hash,
         },
-        # compat attendue par certains tests
+        # compat top-level
         "file_name": path.name,
         "file_size": path.stat().st_size,
         "hash": content_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
         "mime_type": mime,
+        "preview_b64": _preview_b64(path),
     }
 
     if outdir is not None:
