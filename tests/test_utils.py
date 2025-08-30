@@ -1,4 +1,3 @@
-import pytest
 from digitalmeve.utils import format_identity
 
 
