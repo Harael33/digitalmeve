@@ -8,7 +8,20 @@
 [![Downloads](https://static.pepy.tech/badge/digitalmeve/month)](https://pepy.tech/project/digitalmeve)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 
----
+## 📑 Table of Contents  
+
+- [🚀 Vision](#-vision)  
+- [🔑 Levels of Certification](#-levels-of-certification)  
+- [📂 Format Specification — MEVE/1](#-format-specification--meve1)  
+- [🛡 Security](#-security)  
+- [📊 Use Cases](#-use-cases)  
+- [📜 Roadmap](#-roadmap)  
+- [📢 Communication](#-communication)  
+- [⚖ License](#-license)  
+- [🛠 Contributing](#-contributing)  
+- [✅ Status](#-status)  
+- [📚 Documentation](#-documentation)  
+- [🌟 Final Goal](#-final-goal)---
 
 **The first universal format to prove, certify and verify the authenticity of any digital document.**  
 DigitalMeve introduces `.meve` (Memory Verified), a simple and universal way to **timestamp, hash, and certify documents**.  
