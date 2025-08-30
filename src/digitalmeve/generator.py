@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
+import mimetypes
 
 
 def _file_sha256(path: Path) -> str:
@@ -27,12 +28,16 @@ def generate_meve(
 
     Clés requises par la suite de tests :
       - meve_version, issuer, subject{ filename,size,hash_sha256 }, timestamp, metadata
+      - mime_type, et top-level "hash" (même valeur que subject.hash_sha256)
     """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"file not found: {path}")
 
     content_hash = _file_sha256(path)
+    mime, _ = mimetypes.guess_type(path.name)
+    if not mime:
+        mime = "application/octet-stream"
 
     meve: Dict[str, Any] = {
         "meve_version": "1.0",
@@ -42,8 +47,10 @@ def generate_meve(
             "size": path.stat().st_size,
             "hash_sha256": content_hash,
         },
+        "hash": content_hash,  # <= exigé par tests/test_generator.py
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
+        "mime_type": mime,
     }
 
     if outdir is not None:
