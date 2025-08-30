@@ -1,6 +1,4 @@
-# src/digitalmeve/core.py
-
-from __future__ import annotations  # doit absolument être en 1ère ligne
+from __future__ import annotations
 
 import datetime
 from typing import Any, Dict
@@ -14,14 +12,10 @@ def get_current_time() -> datetime.datetime:
 
 
 def generate_meve_data(issuer: str, message: str) -> Dict[str, Any]:
-    """
-    Génère un dictionnaire MEVE valide en utilisant generate_meve().
-    """
+    """Génère un dictionnaire MEVE valide."""
     return generate_meve(issuer=issuer, message=message)
 
 
 def verify_meve_data(meve: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Vérifie la validité d'un dictionnaire MEVE en utilisant verify_meve().
-    """
+    """Vérifie la validité d'un dictionnaire MEVE."""
     return verify_meve(meve)
