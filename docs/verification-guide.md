@@ -1,105 +1,82 @@
-# MEVE — Verification Guide (User)
+# 🛡 DigitalMeve Verification Guide
 
-A `*.meve.json` file certifies:
-- the **existence** of a document at a given UTC timestamp,
-- the **integrity** of its content (SHA-256 hash of bytes),
-- the **issuer link** (Personal / Pro / Official, *computed by the verifier*).
-
-> ⚠️ MEVE certifies the **bytes** of a file, not the “truth” of its content.
-
----
-
-## 1) Verifying a `.meve.json` (web interface – upcoming)
-- Open **DigitalMeve → Verify**.
-- Drag & drop the file `myfile.ext.meve.json`.
-- The verifier will show:
-  - **Status**: Valid / Invalid
-  - **Reason** in case of failure (e.g. *Missing required keys*, *hash mismatch*, *issuer mismatch*)
-  - **Details**: filename, size, hash, timestamp, certification level (Personal/Pro/Official)
+## Overview
+DigitalMeve provides a fast and universal way to verify the authenticity of any `.meve` proof.  
+Verification ensures:
+1. The document has not been tampered with (hash validation).  
+2. The proof contains a valid timestamp (UTC).  
+3. The issuer identity matches the expected level (Personal, Pro, Official).  
 
 ---
 
-## 2) Verifying in Python (library)
+## Verification Methods
 
-```python
-from digitalmeve.core import verify_meve
+### 1. Local verification (Python SDK)
+```bash
+pip install digitalmeve
 
-ok, info = verify_meve("myfile.pdf.meve.json", expected_issuer=None)
+from digitalmeve import verify_meve
+
+ok, info = verify_meve("sample.txt.meve.json", expected_issuer="DigitalMeve Test Suite")
+
 if ok:
-    print("✔ Valid:", info["subject"]["filename"], info["subject"]["hash_sha256"])
+    print("✅ Proof valid:", info)
 else:
-    print("✘ Invalid:", info.get("error"))
-expected_issuer (optional): enforce the expected issuer (e.g. "DigitalMeve Test Suite").
+    print("❌ Invalid proof:", info)
 
-Return value:
 
-(True, info_dict) if valid,
+---
 
-(False, {"error": "...", ...}) if invalid.
+2. Web verification
 
+Drag & drop your .meve.json file into the DigitalMeve Web Verifier (coming soon).
+
+The verifier runs locally in your browser — no data is uploaded.
 
 
 
 ---
 
-3) Standard error messages
+3. API verification
 
-Missing required keys
-→ Some mandatory keys are missing at the root or in subject.
-Example:
+DigitalMeve will provide a REST API for professional integrations:
 
-{ "error": "Missing required keys", "missing": ["metadata", "timestamp"] }
+POST /api/v1/verify
+Content-Type: application/json
 
-hash mismatch
-→ hash ≠ subject.hash_sha256 (internal inconsistency).
+{
+  "proof": { ... }
+}
 
-issuer mismatch
-→ expected_issuer does not match the file issuer.
+Response:
 
-invalid file: …
-→ The file is not valid JSON, corrupted, or not found.
+{
+  "valid": true,
+  "issuer": "Pro",
+  "timestamp": "2025-08-30T12:34:56Z",
+  "hash": "b94d27b9934d3e08..."
+}
+
+
+---
+
+Error Cases
+
+issuer mismatch → Issuer does not match the expected identity.
+
+hash mismatch → The document has been altered.
+
+missing keys → Proof file is incomplete or corrupted.
 
 
 
 ---
 
-4) What to do if invalid?
+Next Steps
 
-Re-generate the proof from the original document.
+See Generator Guide for creating proofs.
 
-Ensure the file was not modified after generation.
-
-Check the expected issuer if you enforce one (Pro/Official).
-
+Check Security for technical guarantees.
 
 
 ---
-
-5) Best practices
-
-Always keep the .meve.json next to the original file (same folder).
-
-When sending, include both (zip or two attachments).
-
-For large files (>50 MB), always use the sidecar file (*.meve.json).
-
-Timestamps are UTC only (local time may differ).
-
-
-
----
-
-6) Legal disclaimer
-
-MEVE proves who froze which bytes at which moment.
-
-It is not a civil identity unless Pro/Official flows are used.
-
-Legal value depends on jurisdiction; MEVE aims at technical interoperability and traceability.
-
-
-
----
-
-📚 More examples: docs/examples.md
-📖 Full specification: docs/specification.md
