@@ -1,3 +1,26 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+Format: Keep a Changelog. Versioning: Semantic Versioning.
+
+## [Unreleased]
+
+### Added
+- Documentation scaffolding: specification, security, examples, roadmap.
+- Issue templates (bug & feature), SECURITY, CONTRIBUTING, Code of Conduct.
+- Dependabot & CODEOWNERS.
+
+### Changed
+- CI quality fixed (flake8 line length), consistent error messages.
+
+### Fixed
+- `generator.py`: adds `hash`, `preview_b64`, `timestamp`, `metadata`, `subject{}`.
+- `verifier.py`: stable `(ok, info)` API; exact error wording (“Missing required keys”).
+- `utils.py`: `format_identity()` handles `{"identity": ...}`.
+- Tests aligned and passing on 3.10/3.11/3.12.
+
+## [1.6.0] - 2025-08-30
+Initial internal stabilization (no public release). All tests green, quality green.
 ## [1.6.0] - 2025-08-29
 ### Added
 - Stabilisation publique de la branche **1.x** (passage en 1.6.0).
