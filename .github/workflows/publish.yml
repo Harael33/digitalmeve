@@ -2,7 +2,11 @@ name: publish
 
 on:
   release:
-    types: [published]
+    types: [published]      # se déclenche quand tu crées une release
+  push:
+    tags:
+      - "v*"                # se déclenche quand tu pousses un tag vX.Y.Z
+  workflow_dispatch: {}      # tu peux aussi le lancer à la main
 
 jobs:
   build-and-publish:
