@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
-from typing import Dict, Optional, Any, Union
+from typing import Any, Dict, Optional, Union
 
 
 def _file_sha256(path: Path) -> str:
@@ -17,23 +18,37 @@ def _file_sha256(path: Path) -> str:
 def generate_meve(
     file_path: Union[str, Path],
     metadata: Optional[Dict[str, Any]] = None,
+    *,
+    outdir: Optional[Union[str, Path]] = None,
+    issuer: str = "Personal",
 ) -> Dict[str, Any]:
     """
-    Génère un mini 'MEVE' (structure dict) utilisé par les tests.
-    Clés attendues par les tests: file_name, file_size, hash_sha256, metadata, issuer.
+    Génère un mini MEVE (dict) utilisé par la suite de tests.
+
+    Clés attendues par les tests :
+    - file_name, file_size, hash_sha256, metadata, issuer, meve_version, timestamp
+
+    Si `outdir` est fourni, écrit un fichier JSON à côté :
+    <nom_fichier>.meve.json
     """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"file not found: {path}")
 
-    content_hash = _file_sha256(path)
-
-    return {
+    meve: Dict[str, Any] = {
         "file_name": path.name,
         "file_size": path.stat().st_size,
-        "hash_sha256": content_hash,
+        "hash_sha256": _file_sha256(path),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
-        # valeur par défaut exigée par les tests
-        "issuer": "Personal",
+        "issuer": issuer,
+        "meve_version": "1.0",
     }
+
+    if outdir is not None:
+        outp = Path(outdir)
+        outp.mkdir(parents=True, exist_ok=True)
+        json_path = outp / f"{path.name}.meve.json"
+        json_path.write_text(json.dumps(meve, ensure_ascii=False, indent=2))
+
+    return meve
