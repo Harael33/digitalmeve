@@ -2,6 +2,9 @@
 
 # DigitalMeve — The Certified Digital Memory (.MEVE)
 
+# DigitalMeve — The .MEVE Standard
+
+![Build](https://github.com/BACOUL/digitalmeve/actions/workflows/quality.yml/badge.svg)
 [![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
 [![Publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)
