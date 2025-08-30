@@ -1,0 +1,15 @@
+diff --git a/.flake8 b/.flake8
+new file mode 100644
+index 0000000..d6d6d6d
+--- /dev/null
++++ b/.flake8
+@@ -0,0 +1,9 @@
++[flake8]
++# Longueur de ligne tolérée
++max-line-length = 100
++
++# Ignorer E203 (conflit avec black)
++extend-ignore = E203
++
++# Dans les tests on tolère les doubles quotes et les lignes longues
++per-file-ignores = tests/*.py: Q000,E501
