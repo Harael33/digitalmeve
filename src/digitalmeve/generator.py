@@ -1,48 +1,50 @@
+"""Generation helpers for DigitalMEVE.
+
+Ce module fournit une fine couche de compatibilité autour des fonctions
+de `core`. On évite les imports circulaires en n’important que les
+symboles nécessaires depuis `core`.
+"""
+
 from __future__ import annotations
 
-import base64
-import datetime
-import hashlib
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, Union
+
+# Import strict et local pour éviter tout import circulaire
+from .core import generate_meve as _core_generate_meve
 
 
-def _utc_now_iso() -> str:
-    """UTC timestamp with Z suffix."""
-    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+Pathish = Union[str, Path]
 
 
-def generate_meve(*, issuer: str, message: str) -> Dict[str, Any]:
+def generate_meve(
+    path: Pathish,
+    *,
+    issuer: str = "tester",
+    outdir: Path | None = None,
+    return_dict: bool = True,
+    **kwargs: Any,
+) -> Dict[str, Any]:
+    """Génère un MEVE pour `path` via le cœur de librairie.
+
+    Cette fonction est un simple proxy qui maintient la compatibilité
+    d’import `from digitalmeve.generator import generate_meve`.
+
+    Args:
+        path: Chemin du fichier cible.
+        issuer: Nom de l’émetteur à inclure dans le MEVE.
+        outdir: Dossier de sortie où écrire le JSON (optionnel).
+        return_dict: Si True, retourne le dict Python (par défaut).
+        **kwargs: Paramètres additionnels passés au cœur.
+
+    Returns:
+        Le dictionnaire MEVE généré.
     """
-    Build a minimal MEVE dict with deterministic hash and preview.
-
-    Keys produced:
-      - issuer, message, timestamp, hash, meve_version, preview_b64
-    """
-    ts = _utc_now_iso()
-    payload = f"{issuer}:{message}:{ts}"
-    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-    preview_b64 = base64.b64encode(message.encode("utf-8")).decode("ascii")
-
-    return {
-        "issuer": issuer,
-        "message": message,
-        "timestamp": ts,
-        "hash": digest,
-        "meve_version": "1.0",
-        "preview_b64": preview_b64,
-    }
-
-
-def verify_meve(meve: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Validate a MEVE dict. Returns {'valid': True} or {'valid': False, 'error': '<reason>'}.
-    """
-    required = ("issuer", "message", "timestamp", "hash")
-    for key in required:
-        if key not in meve:
-            return {"valid": False, "error": f"Missing"}
-    payload = f"{meve['issuer']}:{meve['message']}:{meve['timestamp']}"
-    expected = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-    if expected != meve.get("hash"):
-        return {"valid": False, "error": "Hash mismatch"}
-    return {"valid": True}
+    # Délègue tout au cœur avec des mots-clés explicites (lignes courtes)
+    return _core_generate_meve(
+        path=path,
+        issuer=issuer,
+        outdir=outdir,
+        return_dict=return_dict,
+        **kwargs,
+    )
