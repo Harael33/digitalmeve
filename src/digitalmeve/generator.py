@@ -22,4 +22,8 @@ def generate_meve(
     Returns:
         A dictionary containing the MEVE metadata.
     """
-    return _core_generate_meve(file_path, issuer=issuer, meve_version=meve_version)
+    return _core_generate_meve(
+        file_path,
+        issuer=issuer,
+        meve_version=meve_version,
+    )
