@@ -3,36 +3,37 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Dict, Optional
-import base64
-import mimetypes
+from typing import Dict, Optional, Any, Union
+
+
+def _file_sha256(path: Path) -> str:
+    h = sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def generate_meve(
-    file_path: Path,
+    file_path: Union[str, Path],
     metadata: Optional[Dict[str, Any]] = None,
-    encoding: str = "utf-8",
 ) -> Dict[str, Any]:
     """
-    Génère un MEVE minimal (dictionnaire) pour un fichier.
+    Génère un mini 'MEVE' (structure dict) utilisé par les tests.
+    Clés attendues par les tests: file_name, file_size, hash_sha256, metadata, issuer.
     """
-    p = Path(file_path)
-    if not p.exists():
-        raise FileNotFoundError(f"File not found: {p}")
+    path = Path(file_path)
+    if not path.exists():
+        raise FileNotFoundError(f"file not found: {path}")
 
-    content = p.read_bytes()
-    file_hash = sha256(content).hexdigest()
-    mime_type, _ = mimetypes.guess_type(p.as_posix())
-    preview_b64 = base64.b64encode(content[:64]).decode(encoding)
+    content_hash = _file_sha256(path)
 
     return {
-        "file_name": p.name,
-        "file_size": len(content),
-        "mime_type": mime_type or "application/octet-stream",
-        "hash_sha256": file_hash,
+        "file_name": path.name,
+        "file_size": path.stat().st_size,
+        "hash_sha256": content_hash,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "metadata": metadata or {},
-        "preview_b64": preview_b64,
-        # clé attendue par le test
+        # valeur par défaut exigée par les tests
         "issuer": "Personal",
     }
