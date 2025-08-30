@@ -1,12 +1,12 @@
 # 🌍 DigitalMeve — The .MEVE Standard  
 
-![Build](https://github.com/BACOUL/digitalmeve/actions/workflows/quality.yml/badge.svg)  
-[![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)  
-[![Publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)  
-[![PyPI version](https://img.shields.io/pypi/v/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)  
-[![Python versions](https://img.shields.io/pypi/pyversions/digitalmeve.svg)](https://pypi.org/project/digitalmeve/)  
-[![Downloads](https://static.pepy.tech/badge/digitalmeve/month)](https://pepy.tech/project/digitalmeve)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
+![Build] ![Quality](https://github.com/BACOUL/digitalmeve/actions/workflows/quality.yml/badge.svg?branch=main&t=20250830)
+[![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg?branch=main&t=20250830)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
+[![Publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg?branch=main&t=20250830)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)
+[![PyPI version](https://img.shields.io/pypi/v/digitalmeve.svg?cacheSeconds=600)](https://pypi.org/project/digitalmeve/)
+[![Python versions](https://img.shields.io/pypi/pyversions/digitalmeve.svg?cacheSeconds=600)](https://pypi.org/project/digitalmeve/)
+[![Downloads](https://static.pepy.tech/badge/digitalmeve/month)](https://pepy.tech/project/digitalmeve)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## 📑 Table of Contents  
 
