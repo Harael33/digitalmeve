@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
-import mimetypes
 
 
 def _file_sha256(path: Path) -> str:
@@ -17,58 +16,49 @@ def _file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _preview_b64(path: Path, limit: int = 64) -> str:
-    """Retourne un aperçu base64 (jusqu’à `limit` octets) du fichier."""
-    data = path.read_bytes()[:limit]
-    return base64.b64encode(data).decode("ascii")
+def _small_preview_b64(path: Path, limit: int = 64) -> str:
+    try:
+        data = path.read_bytes()[:limit]
+        return base64.b64encode(data).decode("ascii")
+    except Exception:
+        return ""
 
 
 def generate_meve(
     file_path: Union[str, Path],
     *,
-    outdir: Optional[Union[str, Path]] = None,
+    outdir: Optional[Path] = None,
     issuer: str = "Personal",
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """
-    Génère un dict MEVE minimal et, si outdir est fourni, écrit <filename>.meve.json.
-
-    Clés requises par les tests :
-      - meve_version, issuer, subject{ filename,size,hash_sha256 }, timestamp, metadata
-      - mime_type, top-level "hash", compat top-level file_name / file_size
-      - preview_b64 (aperçu base64 des premiers octets du fichier)
-    """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"file not found: {path}")
 
     content_hash = _file_sha256(path)
-    mime, _ = mimetypes.guess_type(path.name)
-    if not mime:
-        mime = "application/octet-stream"
+    preview_b64 = _small_preview_b64(path)
 
     meve: Dict[str, Any] = {
-        "meve_version": "1.0",
         "issuer": issuer,
+        "meve_version": "1.0",
+        "hash": content_hash,
+        "preview_b64": preview_b64,
+        "metadata": metadata or {},
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "subject": {
             "filename": path.name,
             "size": path.stat().st_size,
             "hash_sha256": content_hash,
         },
-        # compat top-level
+        # champs tolérés par d'autres bouts de code
         "file_name": path.name,
         "file_size": path.stat().st_size,
-        "hash": content_hash,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "metadata": metadata or {},
-        "mime_type": mime,
-        "preview_b64": _preview_b64(path),
     }
 
-    if outdir is not None:
-        od = Path(outdir)
-        od.mkdir(parents=True, exist_ok=True)
-        out_file = od / f"{path.name}.meve.json"
+    if outdir:
+        outdir = Path(outdir)
+        outdir.mkdir(parents=True, exist_ok=True)
+        out_file = outdir / f"{path.name}.meve.json"
         out_file.write_text(json.dumps(meve, ensure_ascii=False, indent=2))
 
     return meve
