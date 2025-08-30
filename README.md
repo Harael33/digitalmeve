@@ -160,6 +160,10 @@ We welcome contributions!
 - [Security](./docs/security.md)  
 - [Examples](./docs/examples.md)  
 - [Roadmap](./docs/roadmap.md)  
+- [Generator Guide](./docs/generator-guide.md)  
+- [Verification Guide](./docs/verification-guide.md)
+
+
 
 ---
 
