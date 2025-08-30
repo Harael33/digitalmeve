@@ -1,29 +1,48 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Dict, Union
+import base64
+import datetime
+import hashlib
+from typing import Any, Dict
 
-from .core import generate_meve as _core_generate_meve
+
+def _utc_now_iso() -> str:
+    """UTC timestamp with Z suffix."""
+    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def generate_meve(
-    file_path: Union[str, Path],
-    issuer: str = "tester",
-    meve_version: str = "1.0",
-) -> Dict[str, Any]:
+def generate_meve(*, issuer: str, message: str) -> Dict[str, Any]:
     """
-    Public wrapper for the core.generate_meve function.
+    Build a minimal MEVE dict with deterministic hash and preview.
 
-    Args:
-        file_path: Path to the file to be converted into MEVE.
-        issuer: The identity of the issuer creating the MEVE file.
-        meve_version: Version string for MEVE format.
-
-    Returns:
-        A dictionary containing the MEVE metadata.
+    Keys produced:
+      - issuer, message, timestamp, hash, meve_version, preview_b64
     """
-    return _core_generate_meve(
-        file_path,
-        issuer=issuer,
-        meve_version=meve_version,
-    )
+    ts = _utc_now_iso()
+    payload = f"{issuer}:{message}:{ts}"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    preview_b64 = base64.b64encode(message.encode("utf-8")).decode("ascii")
+
+    return {
+        "issuer": issuer,
+        "message": message,
+        "timestamp": ts,
+        "hash": digest,
+        "meve_version": "1.0",
+        "preview_b64": preview_b64,
+    }
+
+
+def verify_meve(meve: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate a MEVE dict. Returns {'valid': True} or {'valid': False, 'error': '<reason>'}.
+    """
+    required = ("issuer", "message", "timestamp", "hash")
+    for key in required:
+        if key not in meve:
+            return {"valid": False, "error": f"Missing"}
+    payload = f"{meve['issuer']}:{meve['message']}:{meve['timestamp']}"
+    expected = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    if expected != meve.get("hash"):
+        return {"valid": False, "error": "Hash mismatch"}
+    return {"valid": True}
