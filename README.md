@@ -2,7 +2,7 @@
 
 ![Quality](https://github.com/BACOUL/digitalmeve/actions/workflows/quality.yml/badge.svg?branch=main&t=202508301200)
 [![Tests](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml/badge.svg?branch=main&t=202508301200)](https://github.com/BACOUL/digitalmeve/actions/workflows/tests.yml)
-[![Publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg?branch=main&t=202508301200)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)
+[![publish](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml/badge.svg?branch=main&v=1)](https://github.com/BACOUL/digitalmeve/actions/workflows/publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/digitalmeve.svg?cacheSeconds=600)](https://pypi.org/project/digitalmeve/)
 [![Python versions](https://img.shields.io/pypi/pyversions/digitalmeve.svg?cacheSeconds=600)](https://pypi.org/project/digitalmeve/)
 [![Downloads](https://static.pepy.tech/badge/digitalmeve/month)](https://pepy.tech/project/digitalmeve)
