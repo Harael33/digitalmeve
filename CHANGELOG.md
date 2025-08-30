@@ -1,5 +1,31 @@
-# Changelog
+ 📜 Changelog
 
+All notable changes to this project will be documented here.
+
+---
+
+## [1.6.1] - 2025-08-30
+### Added
+- Initial implementation of `.meve` proof generator (`generate_meve`)  
+- Basic verifier (`verify_meve`) with issuer & hash validation  
+- Support for metadata embedding and sidecar `.meve.json`  
+- Unit test coverage for generator, verifier, and utils  
+- Documentation: README overhaul, `generator-guide.md`, `verification-guide.md`  
+
+### Fixed
+- Alignment between `__version__` and `pyproject.toml`  
+- Test suite stability (`pytest -v`)  
+
+### Security
+- Verification detects missing keys, issuer mismatch, or tampered hash  
+- Proofs are tamper-evident by design (SHA-256 + UTC timestamp)  
+
+---
+
+## [Unreleased]
+- Web drag & drop verifier  
+- REST API for verification  
+- Pro/Official certification levels
 All notable changes to this project will be documented in this file.
 Format: Keep a Changelog. Versioning: Semantic Versioning.
 
