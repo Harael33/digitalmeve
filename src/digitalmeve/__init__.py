@@ -1,2 +1,5 @@
-__all__ = ["__version__"]
-__version__ = "1.6.1"
+"""
+DigitalMeve — The .MEVE Standard
+"""
+
+__version__ = "1.7.0-dev"
