@@ -1,37 +1,23 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "digitalmeve"
-version = "1.6.1"
-description = "DigitalMeve — le premier format universel (.meve) pour certifier l’existence, l’intégrité et l’authenticité des documents."
+version = "1.7.0-dev"
+description = "DigitalMeve — The .MEVE Standard (Certified Digital Memory)"
 readme = "README.md"
-requires-python = ">=3.8"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Jeason Bacoul", email = "jeason.bacoul@gmail.com" }
+    { name = "DigitalMeve Team", email = "support@digitalmeve.org" }
+]
+requires-python = ">=3.9"
+
+dependencies = [
 ]
 
 [project.urls]
 Homepage = "https://github.com/BACOUL/digitalmeve"
+Documentation = "https://github.com/BACOUL/digitalmeve#readme"
 Repository = "https://github.com/BACOUL/digitalmeve"
 Issues = "https://github.com/BACOUL/digitalmeve/issues"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q"
-testpaths = ["tests"]
-
-[project.scripts]
-meve-generate = "digitalmeve.cli_generate:main"
-meve-verify = "digitalmeve.cli_verify:main"
-[tool.black]
-line-length = 88
-target-version = ["py310", "py311", "py312"]
-
-[tool.isort]
-profile = "black"
