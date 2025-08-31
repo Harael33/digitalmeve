@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-import base64
-import json
+from base64 import b64encode
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Dict, Optional, Any, Union
+
+
+_MEVE_VERSION = "1.0"
+_PREVIEW_BYTES = 128  # petite empreinte lisible pour debug/aperçu
 
 
 def _file_sha256(path: Path) -> str:
@@ -16,50 +19,69 @@ def _file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _preview_b64(path: Path, limit: int = 64) -> str:
-    with path.open("rb") as f:
-        data = f.read(limit)
-    return base64.b64encode(data).decode("ascii")
+def _preview_b64(path: Path, limit: int = _PREVIEW_BYTES) -> str:
+    try:
+        with path.open("rb") as f:
+            head = f.read(limit)
+        return b64encode(head).decode("ascii")
+    except Exception:
+        # l’aperçu est optionnel ; en cas de souci on renvoie une chaîne vide
+        return ""
 
 
 def generate_meve(
     file_path: Union[str, Path],
-    *,
-    outdir: Optional[Path] = None,
+    outdir: Optional[Union[str, Path]] = None,
     issuer: str = "Personal",
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Génère une preuve 'MEVE' minimale sous forme de dict.
-    Si `outdir` est fourni, écrit aussi <filename>.meve.json dans ce répertoire.
-    Les tests attendent au moins les clés suivantes au niveau racine :
-    issuer, meve_version, hash, preview_b64, subject, timestamp, metadata.
+    Génère une preuve .meve au format dict.
+
+    - Ajoute les clés attendues par les tests :
+      * meve_version, issuer, timestamp, metadata
+      * subject: { filename, size, hash_sha256 }
+      * hash (copie de subject.hash_sha256)
+      * preview_b64 (aperçu base64 de quelques octets)
+    - Si `outdir` est fourni, écrit un sidecar JSON : <nom_fichier>.meve.json
+
+    Retourne le dict de preuve.
     """
     path = Path(file_path)
     if not path.exists():
         raise FileNotFoundError(f"file not found: {path}")
 
-    digest = _file_sha256(path)
+    # calculs
+    content_hash = _file_sha256(path)
+    preview = _preview_b64(path)
+    ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
-    meve: Dict[str, Any] = {
+    proof: Dict[str, Any] = {
+        "meve_version": _MEVE_VERSION,
         "issuer": issuer,
-        "meve_version": "1.0",
-        "hash": digest,
-        "preview_b64": _preview_b64(path),
+        "timestamp": ts,
+        "metadata": metadata or {},
         "subject": {
             "filename": path.name,
             "size": path.stat().st_size,
-            "hash_sha256": digest,
+            "hash_sha256": content_hash,
         },
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "metadata": metadata or {},
+        # duplication utile et demandée par les tests
+        "hash": content_hash,
+        "preview_b64": preview,
     }
 
+    # écriture optionnelle du sidecar
     if outdir is not None:
-        outdir = Path(outdir)
-        outdir.mkdir(parents=True, exist_ok=True)
-        outfile = outdir / f"{path.name}.meve.json"
-        with outfile.open("w", encoding="utf-8") as f:
-            json.dump(meve, f, ensure_ascii=False, indent=2)
+        out = Path(outdir)
+        out.mkdir(parents=True, exist_ok=True)
+        outfile = out / f"{path.name}.meve.json"
 
-    return meve
+        # Écriture JSON minimale sans dépendances externes
+        # (on garde une indentation faible pour rester léger)
+        import json
+
+        with outfile.open("w", encoding="utf-8") as f:
+            json.dump(proof, f, ensure_ascii=False, separators=(",", ":"), indent=None)
+
+    return proof
