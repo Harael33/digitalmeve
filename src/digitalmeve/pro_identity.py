@@ -1,20 +1,20 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union, Dict, Any
 
 
-@dataclass
-class ProIdentity:
-    """Identité 'pro' minimale (extensible)."""
-    name: str
-    email: Optional[str] = None
-    organization: Optional[str] = None
+def format_identity(value: Optional[Union[str, Path, Dict[str, Any]]]) -> str:
+    """
+    Format an identity into a string.
 
-    def as_dict(self):
-        return {
-            "type": "pro",
-            "name": self.name,
-            "email": self.email,
-            "organization": self.organization,
-        }
+    - str -> returns the string as is
+    - Path -> returns the filename stem in uppercase
+    - dict with "identity" -> returns the identity value
+    - None or other -> raises AttributeError
+    """
+    if isinstance(value, Path):
+        return value.stem.upper()
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict) and "identity" in value:
+        return str(value["identity"])
+    raise AttributeError("invalid identity")
