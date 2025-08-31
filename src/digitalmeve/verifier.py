@@ -1,65 +1,72 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
-import json
 
 
-RequiredKeys = ("issuer", "meve_version", "subject", "metadata", "timestamp")
+_REQUIRED_TOP = ("meve_version", "issuer", "timestamp", "metadata", "subject", "hash")
+_REQUIRED_SUBJECT = ("filename", "size", "hash_sha256")
 
 
-def _load_meve_from_path(p: Union[str, Path]) -> Dict[str, Any]:
-    """Read a .meve.json file and return its JSON content as dict."""
-    path = Path(p)
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def verify_identity(value: Optional[str]) -> bool:
+def _load_meve(obj: Union[str, Path, Dict[str, Any]]) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
     """
-    Very small predicate used by tests:
-    - valid if non-empty, all uppercase and alphanumeric.
+    Charge un objet MEVE depuis un chemin fichier (str/Path) ou retourne le dict tel quel.
+    En cas d'erreur, retourne (None, {"error": "...", ...}).
     """
-    return isinstance(value, str) and value.isupper() and value.isalnum()
+    if isinstance(obj, (str, Path)):
+        p = Path(obj)
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            return data, None
+        except Exception as e:
+            return None, {"error": f"invalid file: {e.__class__.__name__}"}
+    elif isinstance(obj, dict):
+        return obj, None
+    else:
+        return None, {"error": "invalid input type"}
+
+
+def _missing_keys(data: Dict[str, Any]) -> Dict[str, Any]:
+    missing = [k for k in _REQUIRED_TOP if k not in data]
+    if missing:
+        # Message exact attendu par les tests : "Missing required keys"
+        return {"error": "Missing required keys", "missing": missing}
+    subj = data.get("subject", {})
+    sub_missing = [k for k in _REQUIRED_SUBJECT if k not in subj]
+    if sub_missing:
+        return {"error": "Missing required keys", "missing": sub_missing}
+    return {}
 
 
 def verify_meve(
-    meve: Union[Dict[str, Any], str, Path],
+    meve: Union[str, Path, Dict[str, Any]],
     expected_issuer: Optional[str] = None,
 ) -> Tuple[bool, Dict[str, Any]]:
     """
-    Validate a MEVE structure.
+    Vérifie une preuve MEVE.
 
-    - `meve` can be a dict (in-memory) or a path to a JSON file.
-    - Returns (ok, info). On success, info echoes key parts.
-      On failure, info contains an 'error' message (wording matters
-      for the tests) and optional details.
+    Retourne:
+      - (True, info_dict) si valide
+      - (False, {"error": "...", ...}) si invalide
     """
-    # Load from file if a path/string is provided
-    if isinstance(meve, (str, Path)):
-        try:
-            meve = _load_meve_from_path(meve)
-        except Exception as exc:  # pragma: no cover
-            return False, {"error": f"invalid file: {exc!s}"}
+    data, err = _load_meve(meve)
+    if err is not None:
+        return False, err
+    assert data is not None
 
-    # Must be a dict with required keys
-    if not isinstance(meve, dict):
-        return False, {"error": "invalid meve object"}
+    # 1) Clés requises
+    miss = _missing_keys(data)
+    if miss:
+        return False, miss
 
-    missing = [k for k in RequiredKeys if k not in meve]
-    if missing:
-        # Tests look for *exact* wording with capital M
-        return False, {"error": "Missing required keys", "missing": missing}
+    # 2) Cohérence hash top-level vs subject.hash_sha256
+    if data.get("hash") != data.get("subject", {}).get("hash_sha256"):
+        return False, {"error": "hash mismatch"}
 
-    # Optional issuer check
-    if expected_issuer and meve.get("issuer") != expected_issuer:
-        return False, {"error": "issuer mismatch", "expected": expected_issuer}
+    # 3) Issuer attendu (si demandé)
+    if expected_issuer is not None and data.get("issuer") != expected_issuer:
+        return False, {"error": "issuer mismatch", "expected": expected_issuer, "found": data.get("issuer")}
 
-    # All good
-    return True, {
-        "issuer": meve["issuer"],
-        "meve_version": meve["meve_version"],
-        "subject": meve["subject"],
-        "metadata": meve["metadata"],
-        "timestamp": meve["timestamp"],
-    }
+    # Si tout va bien, on retourne (True, data) pour que les tests puissent inspecter
+    return True, data
