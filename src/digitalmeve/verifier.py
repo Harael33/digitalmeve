@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
-__all__ = ["verify_identity"]
+__all__ = ["verify_identity", "verify_meve"]
 
-# Required keys for a valid MEVE object (as used by the tests)
+# Required keys for a valid MEVE object
 _REQUIRED_TOP = (
     "meve_version",
     "issuer",
@@ -30,8 +30,9 @@ def _load_meve(
         try:
             text = p.read_text(encoding="utf-8")
             return json.loads(text), None
-        except Exception as e:  # noqa: BLE001
-            return None, {"error": f"invalid file: {e.__class__.__name__}"}
+        except Exception:  # noqa: BLE001
+            # Always normalize to generic message for tests
+            return None, {"error": "invalid file"}
     if isinstance(obj, dict):
         return obj, None
     return None, {"error": "invalid input type"}
@@ -86,3 +87,11 @@ def verify_identity(
         }
 
     return True, data
+
+
+# Backward compatibility alias for old tests
+def verify_meve(
+    meve: Union[str, Path, Dict[str, Any]],
+    expected_issuer: Optional[str] = None,
+) -> Tuple[bool, Dict[str, Any]]:
+    return verify_identity(meve, expected_issuer)
