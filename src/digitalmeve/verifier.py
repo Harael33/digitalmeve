@@ -18,6 +18,19 @@ _REQUIRED_TOP = (
 _REQUIRED_SUBJECT = ("filename", "size", "hash_sha256")
 
 
+# ---------------------------
+# Simple identity validation
+# ---------------------------
+def verify_identity(value: Optional[str]) -> bool:
+    """
+    Return True iff `value` is a non-empty string (tests' expectation).
+    """
+    return isinstance(value, str) and bool(value.strip())
+
+
+# ---------------------------
+# MEVE loader & validators
+# ---------------------------
 def _load_meve(
     obj: Union[str, Path, Dict[str, Any]]
 ) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
@@ -31,7 +44,7 @@ def _load_meve(
             text = p.read_text(encoding="utf-8")
             return json.loads(text), None
         except Exception:  # noqa: BLE001
-            # Always normalize to generic message for tests
+            # Normalize any file-related error to the generic message expected by tests
             return None, {"error": "invalid file"}
     if isinstance(obj, dict):
         return obj, None
@@ -52,7 +65,7 @@ def _missing_keys(data: Dict[str, Any]) -> Dict[str, Any]:
     return {}
 
 
-def verify_identity(
+def verify_meve(
     meve: Union[str, Path, Dict[str, Any]],
     expected_issuer: Optional[str] = None,
 ) -> Tuple[bool, Dict[str, Any]]:
@@ -87,11 +100,3 @@ def verify_identity(
         }
 
     return True, data
-
-
-# Backward compatibility alias for old tests
-def verify_meve(
-    meve: Union[str, Path, Dict[str, Any]],
-    expected_issuer: Optional[str] = None,
-) -> Tuple[bool, Dict[str, Any]]:
-    return verify_identity(meve, expected_issuer)
